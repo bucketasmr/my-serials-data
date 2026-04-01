@@ -1,239 +1,137 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Редактировать сериалы</title>
-
-<style>
-:root {
-  --accent: #ffb400;
-  --bg: #121212;
-  --card: #1e1e1e;
-}
-
-body {
-  font-family: "Segoe UI", sans-serif;
-  background: var(--bg);
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  padding: 40px;
-}
-
-.themeBox { position: fixed; top: 15px; right: 15px; display: flex; gap: 5px; }
-select { background: #1e1e1e; color: white; border: 1px solid var(--accent); padding: 5px; }
-
-#linksContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 10px;
-  width: 100%;
-  max-width: 1200px;
-}
-
-h1 { color: var(--accent); }
-
-input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--accent); border-radius: 6px; background-color: #1e1e1e; color: #fff; }
-
-.button { background-color: var(--card); border: 2px solid var(--accent); color: var(--accent); padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-.button:hover { background: var(--accent); color: black; }
-
-.linkBlock { padding: 15px; border: 1px solid #444; border-radius: 10px; background: rgba(30,30,30,0.8); }
-.controls { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
-.dragging { opacity: 0.5; }
-.saveCheck { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #22c55e; font-size: 18px; opacity: 0; transition: opacity 0.3s; }
-.saveCheck.show { opacity: 1; }
-
-.glass .button { backdrop-filter: blur(10px); background: rgba(30,30,30,0.6); }
-.neon .button { box-shadow: 0 0 10px var(--accent); }
-.soft .button { border-radius: 20px; }
-.minimal .button { border: none; border-bottom: 2px solid var(--accent); }
-.bold .button { font-weight: bold; }
-
-</style>
+    <meta charset="UTF-8">
+    <title>Редактор Сериалов</title>
+    <style>
+        body { font-family: sans-serif; background: #121212; color: white; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .item { background: #1e1e1e; padding: 10px; border: 1px solid #ffb400; margin-bottom: 10px; border-radius: 8px; display: flex; gap: 10px; }
+        input { background: #333; color: white; border: 1px solid #555; padding: 8px; border-radius: 4px; flex: 1; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .add-btn { background: #22c55e; color: white; }
+        .save-btn { background: #ffb400; color: black; width: 100%; margin-top: 20px; }
+        .token-section { margin-bottom: 30px; padding: 15px; border: 1px dashed #555; }
+        .remove-btn { background: #ef4444; color: white; }
+    </style>
 </head>
-
 <body>
 
-<div class="themeBox">
-  <select id="colorSelect">
-    <option value="#ffb400">🟠</option>
-    <option value="#a855f7">🟣</option>
-    <option value="#22c55e">🟢</option>
-    <option value="#3b82f6">🔵</option>
-    <option value="#ef4444">🔴</option>
-    <option value="#ec4899">🌸</option>
-  </select>
+<div class="container">
+    <a href="index.html" style="color: #ffb400; text-decoration: none;">← Назад к списку</a>
+    <h1>Редактор данных</h1>
 
-  <select id="styleSelect">
-    <option value="">Default</option>
-    <option value="glass">Glass</option>
-    <option value="neon">Neon</option>
-    <option value="soft">Soft</option>
-    <option value="minimal">Minimal</option>
-    <option value="bold">Bold</option>
-  </select>
+    <div class="token-section">
+        <label>GitHub Token:</label><br>
+        <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" style="width: 80%; margin-top: 5px;">
+        <p style="font-size: 11px; color: #aaa;">Токен хранится только в вашем браузере.</p>
+    </div>
+
+    <div id="items-list"></div>
+    
+    <button class="btn add-btn" onclick="addItem()">+ Добавить сериал</button>
+    <button class="btn save-btn" onclick="saveToGitHub()">💾 СОХРАНИТЬ В GITHUB</button>
 </div>
-
-<a class="button" href="Serials.html">← На главную</a>
-<button class="button" onclick="loadFromCloud()">🔄 Обновить из облака</button>
-
-<h1>Редактировать сериалы</h1>
-
-<div style="display:flex; gap:5px; flex-wrap:wrap;">
-  <button class="button" onclick="saveChanges()">💾 Сохранить
-    <span class="saveCheck" id="saveCheck">✔</span>
-  </button>
-  <button class="button" onclick="addNewLink()">➕ Добавить</button>
-  <button class="button" onclick="exportLinks()">📤 Экспорт</button>
-  <button class="button" onclick="importLinks()">📥 Импорт</button>
-</div>
-
-<input type="file" id="fileInput" style="display:none;">
-
-<div id="linksContainer"></div>
 
 <script>
-const CLOUD_URL_BASE = "https://raw.githubusercontent.com/bukcetasmr/my-serials-data/refs/heads/main/my-serials.json";
+    const OWNER = "bucketasmr";
+    const REPO = "my-serials-data";
+    const FILE_PATH = "my-serials.json";
+    
+    let items = [];
 
-let links = JSON.parse(localStorage.getItem("myLinks")) || [];
-const container = document.getElementById("linksContainer");
-const saveCheck = document.getElementById("saveCheck");
+    // Загрузка данных при старте
+    window.onload = async () => {
+        const savedToken = localStorage.getItem('gh_token');
+        if (savedToken) document.getElementById('gh-token').value = savedToken;
 
-let draggedIndex = null;
-
-function renderInputs() {
-  container.innerHTML = "";
-
-  links.forEach((link, i) => {
-    const div = document.createElement("div");
-    div.className = "linkBlock";
-    div.draggable = true;
-    div.dataset.index = i;
-
-    div.innerHTML = `
-      <input value="${link.name}">
-      <input value="${link.url}">
-      <div class="controls">
-        <button class="button" onclick="moveUp(${i})">⬆</button>
-        <button class="button" onclick="moveDown(${i})">⬇</button>
-        <button class="button" onclick="deleteLink(${i})">🗑</button>
-      </div>
-    `;
-
-    div.addEventListener("dragstart", () => { draggedIndex = i; div.classList.add("dragging"); });
-    div.addEventListener("dragend", () => { div.classList.remove("dragging"); });
-
-    container.appendChild(div);
-  });
-}
-
-container.addEventListener("dragover", (e) => {
-  e.preventDefault();
-  const afterElement = getClosestElement(e.clientX, e.clientY);
-  const dragging = document.querySelector(".dragging");
-  if (!dragging) return;
-  if (!afterElement) container.appendChild(dragging);
-  else container.insertBefore(dragging, afterElement);
-});
-
-function getClosestElement(x, y) {
-  const elements = [...container.querySelectorAll(".linkBlock:not(.dragging)")];
-  let closest = null;
-  let closestDistance = Infinity;
-  elements.forEach(el => {
-    const rect = el.getBoundingClientRect();
-    const dx = x - (rect.left + rect.width/2);
-    const dy = y - (rect.top + rect.height/2);
-    const distance = Math.sqrt(dx*dx + dy*dy);
-    if (distance < closestDistance) { closestDistance = distance; closest = el; }
-  });
-  return closest;
-}
-
-container.addEventListener("drop", () => {
-  updateLinksFromInputs();
-});
-
-function moveUp(i){ if(i===0)return; [links[i],links[i-1]]=[links[i-1],links[i]]; renderInputs(); }
-function moveDown(i){ if(i===links.length-1)return; [links[i],links[i+1]]=[links[i+1],links[i]]; renderInputs(); }
-function deleteLink(i){ if(!confirm("Удалить?"))return; links.splice(i,1); renderInputs(); }
-function addNewLink(){ links.unshift({name:"Новый сериал",url:""}); renderInputs(); }
-
-function updateLinksFromInputs() {
-  const blocks = container.querySelectorAll(".linkBlock");
-  links = [...blocks].map(block => {
-    const inputs = block.querySelectorAll("input");
-    return { name: inputs[0].value, url: inputs[1].value };
-  });
-}
-
-function saveChanges(){
-  updateLinksFromInputs();
-  localStorage.setItem("myLinks", JSON.stringify(links));
-  renderInputs();
-  saveCheck.classList.add("show");
-  setTimeout(()=>saveCheck.classList.remove("show"),2000);
-}
-
-function exportLinks(){
-  updateLinksFromInputs();
-  const blob = new Blob([JSON.stringify(links,null,2)], {type:"application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "my-serials.json";
-  a.click();
-}
-
-function importLinks(){
-  const input = document.getElementById("fileInput");
-  input.click();
-  input.onchange = () => {
-    const file = input.files[0];
-    const reader = new FileReader();
-    reader.onload = e => {
-      links = JSON.parse(e.target.result);
-      renderInputs();
+        // Загружаем текущий список из GitHub (публичный доступ)
+        try {
+            const res = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${FILE_PATH}?t=${Date.now()}`);
+            items = await res.json();
+            render();
+        } catch (e) {
+            console.log("Файл пока пуст или не найден");
+        }
     };
-    reader.readAsText(file);
-  };
-}
 
-async function loadFromCloud() {
-  try {
-    const url = CLOUD_URL_BASE + "?t=" + Date.now();
-    const res = await fetch(url, { cache: "no-store" });
-    links = await res.json();
-    localStorage.setItem("myLinks", JSON.stringify(links));
-    renderInputs();
-    alert("Обновлено из облака ☁️");
-  } catch (e) {
-    alert("Ошибка загрузки из облака");
-  }
-}
+    function render() {
+        const list = document.getElementById('items-list');
+        list.innerHTML = "";
+        items.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'item';
+            div.innerHTML = `
+                <input type="text" value="${item.name}" oninput="updateItem(${index}, 'name', this.value)" placeholder="Название">
+                <input type="text" value="${item.url}" oninput="updateItem(${index}, 'url', this.value)" placeholder="Ссылка">
+                <button class="btn remove-btn" onclick="removeItem(${index})">✕</button>
+            `;
+            list.appendChild(div);
+        });
+    }
 
-const colorSelect=document.getElementById("colorSelect");
-const styleSelect=document.getElementById("styleSelect");
+    function addItem() {
+        items.push({ name: "", url: "" });
+        render();
+    }
 
-function applyTheme(){
-  document.documentElement.style.setProperty('--accent',colorSelect.value);
-  document.body.className=styleSelect.value;
-  localStorage.setItem("themeColor",colorSelect.value);
-  localStorage.setItem("themeStyle",styleSelect.value);
-}
+    function updateItem(index, key, val) {
+        items[index][key] = val;
+    }
 
-colorSelect.value=localStorage.getItem("themeColor")||"#ffb400";
-styleSelect.value=localStorage.getItem("themeStyle")||"";
+    function removeItem(index) {
+        items.splice(index, 1);
+        render();
+    }
 
-applyTheme();
+    async function saveToGitHub() {
+        const token = document.getElementById('gh-token').value.trim();
+        if (!token) return alert("Введите GitHub Token!");
+        localStorage.setItem('gh_token', token);
 
-colorSelect.onchange=applyTheme;
-styleSelect.onchange=applyTheme;
+        const btn = document.querySelector('.save-btn');
+        btn.textContent = "⌛ Сохранение...";
+        btn.disabled = true;
 
-renderInputs();
+        try {
+            // 1. Получаем SHA текущего файла (нужен для обновления)
+            const fileInfoRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
+                headers: { "Authorization": `token ${token}` }
+            });
+            const fileData = await fileInfoRes.json();
+            const sha = fileData.sha;
+
+            // 2. Кодируем новый контент в Base64
+            const content = btoa(unescape(encodeURIComponent(JSON.stringify(items, null, 2))));
+
+            // 3. Отправляем обновление
+            const saveRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `token ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: "Update serials list via web editor",
+                    content: content,
+                    sha: sha
+                })
+            });
+
+            if (saveRes.ok) {
+                alert("Успешно сохранено в GitHub! 🚀");
+            } else {
+                const err = await saveRes.json();
+                alert("Ошибка: " + err.message);
+            }
+        } catch (e) {
+            alert("Произошла ошибка при сохранении.");
+            console.error(e);
+        } finally {
+            btn.textContent = "💾 СОХРАНИТЬ В GITHUB";
+            btn.disabled = false;
+        }
+    }
 </script>
 
 </body>
