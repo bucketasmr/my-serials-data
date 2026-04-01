@@ -1,236 +1,286 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Редактор Сериалов</title>
-    <style>
-        :root {
-            --accent: #ffb400;
-            --bg: #121212;
-            --card: #1e1e1e;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Редактировать сериалы</title>
 
-        body {
-            font-family: "Segoe UI", sans-serif;
-            background: var(--bg);
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px;
-            margin: 0;
-        }
+<style>
+:root {
+  --accent: #ffb400;
+  --bg: #121212;
+  --card: #1e1e1e;
+}
 
-        .container {
-            width: 100%;
-            max-width: 800px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 40px;
+}
 
-        h1 { color: var(--accent); text-align: center; }
+.themeBox { position: fixed; top: 15px; right: 15px; display: flex; gap: 5px; z-index: 100; }
+select { background: #1e1e1e; color: white; border: 1px solid var(--accent); padding: 5px; border-radius: 4px; }
 
-        /* Секция токена */
-        .token-box {
-            background: var(--card);
-            border: 1px dashed var(--accent);
-            padding: 15 shadow;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 20px;
-        }
+/* Секция токена */
+.token-box {
+  background: var(--card);
+  border: 1px dashed var(--accent);
+  padding: 15px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.token-box label { font-size: 12px; color: var(--accent); display: block; margin-bottom: 5px; }
+.token-box input { margin-bottom: 0; font-size: 12px; padding: 8px; }
 
-        /* Карточки сериалов */
-        .item-card {
-            background: var(--card);
-            border: 2px solid var(--accent);
-            padding: 15px;
-            border-radius: 8px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            transition: 0.2s;
-        }
+#linksContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 15px;
+  width: 100%;
+  max-width: 1200px;
+}
 
-        input {
-            background: #2a2a2a;
-            color: white;
-            border: 1px solid #444;
-            padding: 10px;
-            border-radius: 6px;
-            flex: 1;
-            outline: none;
-        }
+h1 { color: var(--accent); }
 
-        input:focus { border-color: var(--accent); }
+input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--accent); border-radius: 6px; background-color: #1e1e1e; color: #fff; box-sizing: border-box; }
 
-        /* Кнопки в твоем стиле */
-        .button {
-            box-sizing: border-box;
-            background: var(--card);
-            border: 2px solid var(--accent);
-            color: var(--accent);
-            padding: 10px 20px;
-            border-radius: 8px;
-            transition: 0.2s;
-            text-align: center;
-            text-decoration: none;
-            cursor: pointer;
-            font-weight: bold;
-            display: inline-block;
-        }
+.button { background-color: var(--card); border: 2px solid var(--accent); color: var(--accent); padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: bold; }
+.button:hover { background: var(--accent); color: black; transform: scale(1.02); }
 
-        .button:hover {
-            background: var(--accent);
-            color: black;
-            transform: scale(1.02);
-        }
+.linkBlock { padding: 15px; border: 1px solid #444; border-radius: 10px; background: rgba(30,30,30,0.8); position: relative; }
+.controls { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+.dragging { opacity: 0.5; }
+.saveCheck { margin-left: 5px; color: #22c55e; display: none; }
+.saveCheck.show { display: inline; }
 
-        .btn-add { border-color: #22c55e; color: #22c55e; margin-top: 10px; }
-        .btn-add:hover { background: #22c55e; color: white; }
-
-        .btn-save { 
-            background: var(--accent); 
-            color: black; 
-            margin-top: 30px; 
-            font-size: 18px;
-            width: 100%;
-        }
-
-        .btn-remove {
-            border-color: #ef4444;
-            color: #ef4444;
-            padding: 10px 15px;
-        }
-        .btn-remove:hover { background: #ef4444; color: white; }
-
-        .back-link {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            font-size: 14px;
-        }
-    </style>
+/* Темы */
+.glass .button { backdrop-filter: blur(10px); background: rgba(30,30,30,0.6); }
+.neon .button { box-shadow: 0 0 10px var(--accent); }
+.soft .button { border-radius: 20px; }
+.minimal .button { border: none; border-bottom: 2px solid var(--accent); }
+.bold .button { font-weight: bold; }
+</style>
 </head>
+
 <body>
 
-<a href="index.html" class="button back-link">← Назад</a>
+<div class="themeBox">
+  <select id="colorSelect">
+    <option value="#ffb400">🟠</option>
+    <option value="#a855f7">🟣</option>
+    <option value="#22c55e">🟢</option>
+    <option value="#3b82f6">🔵</option>
+    <option value="#ef4444">🔴</option>
+    <option value="#ec4899">🌸</option>
+  </select>
 
-<div class="container">
-    <h1>Редактор списка 🎬</h1>
-
-    <div class="token-box">
-        <label style="font-size: 14px; color: var(--accent);">Ключ доступа (GitHub Token):</label>
-        <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
-    </div>
-
-    <div id="items-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
-    
-    <div style="text-align: center;">
-        <button class="button btn-add" onclick="addItem()">+ Добавить новый сериал</button>
-    </div>
-
-    <button class="button btn-save" onclick="saveToGitHub()">💾 СОХРАНИТЬ В GITHUB</button>
+  <select id="styleSelect">
+    <option value="">Default</option>
+    <option value="glass">Glass</option>
+    <option value="neon">Neon</option>
+    <option value="soft">Soft</option>
+    <option value="minimal">Minimal</option>
+    <option value="bold">Bold</option>
+  </select>
 </div>
 
+<a class="button" href="serials.html">← На главную</a>
+
+<h1>Редактор данных</h1>
+
+<div class="token-box">
+    <label>GITHUB PERSONAL ACCESS TOKEN</label>
+    <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
+</div>
+
+<div style="display:flex; gap:8px; flex-wrap:wrap; justify-content: center;">
+  <button class="button" onclick="saveAll()">💾 Сохранить везде <span class="saveCheck" id="saveCheck">✔</span></button>
+  <button class="button" onclick="addNewLink()">➕ Добавить</button>
+  <button class="button" onclick="loadFromCloud()">🔄 Обновить из облака</button>
+  <button class="button" onclick="exportLinks()">📤 Экспорт JSON</button>
+  <button class="button" onclick="importLinks()">📥 Импорт JSON</button>
+</div>
+
+<input type="file" id="fileInput" style="display:none;">
+
+<div id="linksContainer"></div>
+
 <script>
-    const OWNER = "bucketasmr";
-    const REPO = "my-serials-data";
-    const FILE_PATH = "my-serials.json";
+const OWNER = "bucketasmr";
+const REPO = "my-serials-data";
+const FILE_PATH = "my-serials.json";
+
+let links = JSON.parse(localStorage.getItem("myLinks")) || [];
+const container = document.getElementById("linksContainer");
+const saveCheck = document.getElementById("saveCheck");
+const ghTokenInput = document.getElementById("gh-token");
+
+// Загрузка токена из памяти
+ghTokenInput.value = localStorage.getItem("gh_token") || "";
+
+function renderInputs() {
+  container.innerHTML = "";
+  links.forEach((link, i) => {
+    const div = document.createElement("div");
+    div.className = "linkBlock";
+    div.draggable = true;
+    div.dataset.index = i;
+
+    div.innerHTML = `
+      <input value="${link.name}" placeholder="Название" class="ln-name">
+      <input value="${link.url}" placeholder="Ссылка" class="ln-url">
+      <div class="controls">
+        <button class="button" onclick="moveUp(${i})">⬆</button>
+        <button class="button" onclick="moveDown(${i})">⬇</button>
+        <button class="button" onclick="deleteLink(${i})">🗑</button>
+      </div>
+    `;
+
+    div.addEventListener("dragstart", () => { draggedIndex = i; div.classList.add("dragging"); });
+    div.addEventListener("dragend", () => { div.classList.remove("dragging"); updateLinksFromInputs(); });
+    container.appendChild(div);
+  });
+}
+
+// Drag & Drop логика
+let draggedIndex = null;
+container.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  const dragging = document.querySelector(".dragging");
+  const afterElement = getClosestElement(e.clientX, e.clientY);
+  if (afterElement == null) container.appendChild(dragging);
+  else container.insertBefore(dragging, afterElement);
+});
+
+function getClosestElement(x, y) {
+  const elements = [...container.querySelectorAll(".linkBlock:not(.dragging)")];
+  return elements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) return { offset: offset, element: child };
+    else return closest;
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+function updateLinksFromInputs() {
+  const blocks = container.querySelectorAll(".linkBlock");
+  links = [...blocks].map(block => ({
+    name: block.querySelector(".ln-name").value,
+    url: block.querySelector(".ln-url").value
+  }));
+}
+
+// --- СОХРАНЕНИЕ ---
+async function saveAll() {
+  updateLinksFromInputs();
+  const token = ghTokenInput.value.trim();
+  
+  // 1. Локально
+  localStorage.setItem("myLinks", JSON.stringify(links));
+  if(token) localStorage.setItem("gh_token", token);
+
+  // 2. В Облако (если есть токен)
+  if (token) {
+    const btn = document.querySelector('button[onclick="saveAll()"]');
+    btn.textContent = "⌛ Синхронизация...";
     
-    let items = [];
+    try {
+      // Получаем SHA
+      const resInfo = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
+        headers: { "Authorization": `token ${token}` }
+      });
+      const fileData = await resInfo.json();
+      
+      // Отправляем данные
+      const content = btoa(unescape(encodeURIComponent(JSON.stringify(links, null, 2))));
+      const saveRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
+        method: "PUT",
+        headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "Update via Web Editor", content: content, sha: fileData.sha })
+      });
 
-    window.onload = async () => {
-        const savedToken = localStorage.getItem('gh_token');
-        if (savedToken) document.getElementById('gh-token').value = savedToken;
+      if (saveRes.ok) {
+        saveCheck.classList.add("show");
+        setTimeout(() => saveCheck.classList.remove("show"), 2000);
+      } else { alert("Ошибка GitHub: Проверьте токен."); }
+    } catch (e) { alert("Ошибка сети при связи с GitHub."); }
+    
+    btn.innerHTML = `💾 Сохранить везде <span class="saveCheck" id="saveCheck">✔</span>`;
+  } else {
+    // Просто локальное сохранение
+    saveCheck.classList.add("show");
+    setTimeout(() => saveCheck.classList.remove("show"), 2000);
+    alert("Сохранено локально в браузере. Для облака введите токен.");
+  }
+}
 
-        try {
-            const res = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${FILE_PATH}?t=${Date.now()}`);
-            items = await res.json();
-            render();
-        } catch (e) {
-            console.log("Данные не найдены, начинаем с пустого списка");
-        }
+// Функции управления списком
+function moveUp(i){ if(i===0)return; updateLinksFromInputs(); [links[i],links[i-1]]=[links[i-1],links[i]]; renderInputs(); }
+function moveDown(i){ if(i===links.length-1)return; updateLinksFromInputs(); [links[i],links[i+1]]=[links[i+1],links[i]]; renderInputs(); }
+function deleteLink(i){ if(!confirm("Удалить?"))return; updateLinksFromInputs(); links.splice(i,1); renderInputs(); }
+function addNewLink(){ updateLinksFromInputs(); links.unshift({name:"", url:""}); renderInputs(); }
+
+function exportLinks(){
+  updateLinksFromInputs();
+  const blob = new Blob([JSON.stringify(links,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "my-serials.json";
+  a.click();
+}
+
+function importLinks(){
+  const input = document.getElementById("fileInput");
+  input.click();
+  input.onchange = () => {
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        links = JSON.parse(e.target.result);
+        renderInputs();
+      } catch(err) { alert("Неверный формат JSON"); }
     };
+    reader.readAsText(file);
+  };
+}
 
-    function render() {
-        const list = document.getElementById('items-list');
-        list.innerHTML = "";
-        items.forEach((item, index) => {
-            const div = document.createElement('div');
-            div.className = 'item-card';
-            div.innerHTML = `
-                <input type="text" value="${item.name}" oninput="updateItem(${index}, 'name', this.value)" placeholder="Название фильма">
-                <input type="text" value="${item.url}" oninput="updateItem(${index}, 'url', this.value)" placeholder="Ссылка на плеер">
-                <button class="button btn-remove" onclick="removeItem(${index})">✕</button>
-            `;
-            list.appendChild(div);
-        });
-    }
+async function loadFromCloud() {
+  try {
+    const res = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${FILE_PATH}?t=${Date.now()}`);
+    links = await res.json();
+    localStorage.setItem("myLinks", JSON.stringify(links));
+    renderInputs();
+    alert("Загружено из GitHub! ☁️");
+  } catch (e) { alert("Ошибка загрузки. Проверьте репозиторий."); }
+}
 
-    function addItem() {
-        items.push({ name: "", url: "" });
-        render();
-    }
+// Темизация
+const colorSelect = document.getElementById("colorSelect");
+const styleSelect = document.getElementById("styleSelect");
 
-    function updateItem(index, key, val) {
-        items[index][key] = val;
-    }
+function applyTheme(){
+  document.documentElement.style.setProperty('--accent', colorSelect.value);
+  document.body.className = styleSelect.value;
+  localStorage.setItem("themeColor", colorSelect.value);
+  localStorage.setItem("themeStyle", styleSelect.value);
+}
 
-    function removeItem(index) {
-        if(confirm("Удалить этот пункт?")) {
-            items.splice(index, 1);
-            render();
-        }
-    }
+colorSelect.value = localStorage.getItem("themeColor") || "#ffb400";
+styleSelect.value = localStorage.getItem("themeStyle") || "";
+applyTheme();
+colorSelect.onchange = applyTheme;
+styleSelect.onchange = applyTheme;
 
-    async function saveToGitHub() {
-        const token = document.getElementById('gh-token').value.trim();
-        if (!token) return alert("Пожалуйста, введите ваш GitHub Token!");
-        
-        localStorage.setItem('gh_token', token);
-        const btn = document.querySelector('.btn-save');
-        btn.textContent = "⌛ Синхронизация...";
-        btn.disabled = true;
-
-        try {
-            const fileInfoRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
-                headers: { "Authorization": `token ${token}` }
-            });
-            const fileData = await fileInfoRes.json();
-            const sha = fileData.sha;
-
-            const content = btoa(unescape(encodeURIComponent(JSON.stringify(items, null, 2))));
-
-            const saveRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
-                method: "PUT",
-                headers: {
-                    "Authorization": `token ${token}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message: "Обновление списка сериалов через редактор",
-                    content: content,
-                    sha: sha
-                })
-            });
-
-            if (saveRes.ok) {
-                alert("Данные успешно отправлены в облако! 🚀");
-            } else {
-                alert("Ошибка сохранения. Проверьте правильность токена.");
-            }
-        } catch (e) {
-            alert("Ошибка сети или GitHub API.");
-        } finally {
-            btn.textContent = "💾 СОХРАНИТЬ В GITHUB";
-            btn.disabled = false;
-        }
-    }
+renderInputs();
 </script>
 
 </body>
