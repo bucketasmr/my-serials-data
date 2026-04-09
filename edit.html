@@ -14,22 +14,27 @@ select { background: #1e1e1e; color: white; border: 1px solid var(--accent); pad
 #linksContainer { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; width: 100%; max-width: 1200px; }
 input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--accent); border-radius: 6px; background-color: #1e1e1e; color: #fff; box-sizing: border-box; }
 
-/* Стили для выбора цвета */
-.color-row { display: flex; gap: 5px; align-items: center; margin-bottom: 8px; }
-.ln-color { width: 50px !important; height: 38px; padding: 2px !important; cursor: pointer; border: 2px solid var(--accent) !important; }
-.reset-color { font-size: 10px; padding: 5px; opacity: 0.6; }
+.color-row { display: flex; gap: 5px; align-items: center; margin-bottom: 8px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; }
+.ln-color { width: 50px !important; height: 35px; padding: 0 !important; cursor: pointer; border: none !important; background: none !important; }
+.reset-color { font-size: 10px; padding: 5px; cursor: pointer; background: #333; border: 1px solid #555; color: #ccc; border-radius: 4px; }
 
-.button { background-color: var(--card); border: 2px solid var(--accent); color: var(--accent); padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+.button { background-color: var(--card); border: 2px solid var(--accent); color: var(--accent); padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; text-align: center; }
 .button:hover { background: var(--accent); color: black; }
-.linkBlock { padding: 15px; border: 1px solid #444; border-radius: 10px; background: rgba(30,30,30,0.8); transition: 0.3s; }
+.linkBlock { padding: 15px; border: 1px solid #444; border-radius: 10px; background: rgba(30,30,30,0.8); }
 .controls { display: flex; gap: 5px; margin-top: 5px; }
-.dragging { opacity: 0.5; }
 </style>
 </head>
 
 <body>
 <div class="themeBox">
-  <select id="colorSelect"><option value="#ffb400">🟠</option><option value="#a855f7">🟣</option><option value="#22c55e">🟢</option></select>
+  <select id="colorSelect">
+    <option value="#ffb400">🟠</option>
+    <option value="#a855f7">🟣</option>
+    <option value="#22c55e">🟢</option>
+    <option value="#3b82f6">🔵</option>
+    <option value="#ef4444">🔴</option>
+    <option value="#ec4899">🌸</option>
+  </select>
   <select id="styleSelect"><option value="">Default</option><option value="glass">Glass</option></select>
 </div>
 
@@ -41,7 +46,7 @@ input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--
     <input type="password" id="gh-token" placeholder="ghp_xxxx">
 </div>
 
-<div style="display:flex; gap:8px; flex-wrap:wrap; justify-content: center;">
+<div style="display:flex; gap:8px; flex-wrap:wrap; justify-content: center; margin-top: 10px;">
   <button class="button saveBtn" onclick="saveAll()">💾 Сохранить везде</button>
   <button class="button" onclick="addNewLink()">➕ Добавить</button>
   <button class="button" onclick="loadFromCloud()">🔄 Обновить из облака</button>
@@ -51,7 +56,7 @@ input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--
 
 <script>
 const OWNER = "bucketasmr", REPO = "my-serials-data", FILE_PATH = "my-serials.json";
-let links = JSON.parse(localStorage.getItem("myLinks")) || [];
+let links = [];
 const ghTokenInput = document.getElementById("gh-token");
 ghTokenInput.value = localStorage.getItem("gh_token") || "";
 
@@ -61,18 +66,18 @@ function renderInputs() {
   links.forEach((link, i) => {
     const div = document.createElement("div");
     div.className = "linkBlock";
-    div.draggable = true;
     
-    // Проверяем, есть ли цвет, иначе ставим прозрачный/тему
-    const currentColor = link.color || "#ffb400"; 
+    // Если у ссылки есть цвет — используем его, если нет — ставим прозрачный для вида
+    const hasColor = link.color && link.color.startsWith('#');
+    const colorVal = hasColor ? link.color : "#ffffff";
 
     div.innerHTML = `
       <input value="${link.name}" placeholder="Название" class="ln-name">
       <input value="${link.url}" placeholder="Ссылка" class="ln-url">
       <div class="color-row">
-        <input type="color" value="${currentColor}" class="ln-color" title="Цвет кнопки">
-        <button class="button reset-color" onclick="resetLinkColor(this)" title="Сбросить к теме">✖ цвет</button>
-        <span style="font-size: 12px; color: #888;">${link.color ? 'Свой цвет' : 'По теме'}</span>
+        <input type="color" value="${colorVal}" class="ln-color" ${hasColor ? 'data-active="true"' : ''}>
+        <button class="reset-color" onclick="resetColor(this)">Сбросить цвет</button>
+        <span style="font-size:11px; color:${hasColor ? 'var(--accent)' : '#777'}">${hasColor ? 'ИНДИВИДУАЛЬНЫЙ' : 'ПО ТЕМЕ'}</span>
       </div>
       <div class="controls">
         <button class="button" onclick="moveUp(${i})">⬆</button>
@@ -80,47 +85,30 @@ function renderInputs() {
         <button class="button" onclick="deleteLink(${i})">🗑</button>
       </div>`;
     
-    div.addEventListener("dragstart", () => { draggedIndex = i; div.classList.add("dragging"); });
-    div.addEventListener("dragend", () => { div.classList.remove("dragging"); updateLinksFromInputs(); });
+    // Следим за изменением цвета
+    const cp = div.querySelector('.ln-color');
+    cp.oninput = () => { cp.setAttribute('data-active', 'true'); cp.nextElementSibling.nextElementSibling.textContent = "ИНДИВИДУАЛЬНЫЙ"; cp.nextElementSibling.nextElementSibling.style.color = "var(--accent)"; };
+    
     container.appendChild(div);
   });
 }
 
-function resetLinkColor(btn) {
-    const block = btn.closest('.linkBlock');
-    const colorInput = block.querySelector('.ln-color');
-    colorInput.removeAttribute('data-active');
-    colorInput.value = "#ffb400"; // визуально
-    btn.nextElementSibling.textContent = "По теме";
-    updateLinksFromInputs();
+function resetColor(btn) {
+    const cp = btn.previousElementSibling;
+    cp.removeAttribute('data-active');
+    cp.value = "#ffffff";
+    btn.nextElementSibling.textContent = "ПО ТЕМЕ";
+    btn.nextElementSibling.style.color = "#777";
 }
-
-// Слушатель для пометки, что цвет был изменен вручную
-document.addEventListener('input', (e) => {
-    if(e.target.classList.contains('ln-color')) {
-        e.target.setAttribute('data-active', 'true');
-        e.target.nextElementSibling.nextElementSibling.textContent = "Свой цвет";
-    }
-});
 
 function updateLinksFromInputs() {
   links = [...document.querySelectorAll(".linkBlock")].map(block => {
-    const colorInput = block.querySelector(".ln-color");
-    const linkObj = {
-        name: block.querySelector(".ln-name").value,
-        url: block.querySelector(".ln-url").value
-    };
-    
-    // Сохраняем цвет только если он "активен" (изменен пользователем) 
-    // или если он уже был в данных
-    const isCustom = colorInput.hasAttribute('data-active') || 
-                     links.find(l => l.name === linkObj.name && l.color);
-    
-    if (isCustom && colorInput.getAttribute('data-active') !== 'false') {
-        linkObj.color = colorInput.value;
-    }
-    
-    return linkObj;
+    const name = block.querySelector(".ln-name").value;
+    const url = block.querySelector(".ln-url").value;
+    const cp = block.querySelector(".ln-color");
+    const obj = { name, url };
+    if (cp.hasAttribute('data-active')) obj.color = cp.value;
+    return obj;
   });
 }
 
@@ -132,7 +120,7 @@ async function saveAll() {
 
   if (token) {
     const btn = document.querySelector('.saveBtn');
-    btn.textContent = "⌛...";
+    btn.textContent = "⌛ Сохранение...";
     try {
       const resInfo = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
         headers: { "Authorization": `token ${token}` }
@@ -143,10 +131,10 @@ async function saveAll() {
       const saveRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
         method: "PUT",
         headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ message: "Update", content: content, sha: fileData.sha })
+        body: JSON.stringify({ message: "Update via Editor", content: content, sha: fileData.sha })
       });
-      if (saveRes.ok) alert("В облаке сохранено! 🚀");
-    } catch (e) { alert("Ошибка GitHub."); }
+      if (saveRes.ok) alert("Успешно сохранено на GitHub! 🚀");
+    } catch (e) { alert("Ошибка GitHub: " + e.message); }
     btn.textContent = "💾 Сохранить везде";
   }
 }
@@ -158,13 +146,32 @@ function moveDown(i){ if(i<links.length-1){ updateLinksFromInputs(); [links[i],l
 
 async function loadFromCloud() {
   try {
-    const res = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${FILE_PATH}?t=${Date.now()}`, { mode: 'cors', cache: 'no-store' });
-    const text = await res.text();
-    const data = JSON.parse(text);
-    if(Array.isArray(data)) { links = data; localStorage.setItem("myLinks", JSON.stringify(links)); renderInputs(); alert("Загружено! ☁️"); }
+    const res = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${FILE_PATH}?t=${Date.now()}`);
+    links = await res.json();
+    localStorage.setItem("myLinks", JSON.stringify(links));
+    renderInputs();
+    alert("Загружено из облака! ☁️");
   } catch (e) { alert("Ошибка загрузки."); }
 }
 
+// Работа с темой в редакторе
+const colorSelect = document.getElementById("colorSelect");
+const styleSelect = document.getElementById("styleSelect");
+
+function applyTheme() {
+  document.documentElement.style.setProperty('--accent', colorSelect.value);
+  document.body.className = styleSelect.value;
+  localStorage.setItem("themeColor", colorSelect.value);
+  localStorage.setItem("themeStyle", styleSelect.value);
+}
+
+colorSelect.value = localStorage.getItem("themeColor") || "#ffb400";
+styleSelect.value = localStorage.getItem("themeStyle") || "";
+colorSelect.onchange = applyTheme;
+styleSelect.onchange = applyTheme;
+applyTheme();
+
+links = JSON.parse(localStorage.getItem("myLinks")) || [];
 renderInputs();
 </script>
 </body>
