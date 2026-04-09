@@ -22,6 +22,10 @@ input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--
 .button:hover { background: var(--accent); color: black; }
 .linkBlock { padding: 15px; border: 1px solid #444; border-radius: 10px; background: rgba(30,30,30,0.8); }
 .controls { display: flex; gap: 5px; margin-top: 5px; }
+
+/* Стиль для кнопки массового сброса */
+.danger-btn { border-color: #ef4444; color: #ef4444; }
+.danger-btn:hover { background: #ef4444; color: white; }
 </style>
 </head>
 
@@ -49,6 +53,7 @@ input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--
 <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content: center; margin-top: 10px;">
   <button class="button saveBtn" onclick="saveAll()">💾 Сохранить везде</button>
   <button class="button" onclick="addNewLink()">➕ Добавить</button>
+  <button class="button danger-btn" onclick="resetAllColors()">🔴 Сбросить ВСЕ цвета</button>
   <button class="button" onclick="loadFromCloud()">🔄 Обновить из облака</button>
 </div>
 
@@ -67,7 +72,6 @@ function renderInputs() {
     const div = document.createElement("div");
     div.className = "linkBlock";
     
-    // Если у ссылки есть цвет — используем его, если нет — ставим прозрачный для вида
     const hasColor = link.color && link.color.startsWith('#');
     const colorVal = hasColor ? link.color : "#ffffff";
 
@@ -76,7 +80,7 @@ function renderInputs() {
       <input value="${link.url}" placeholder="Ссылка" class="ln-url">
       <div class="color-row">
         <input type="color" value="${colorVal}" class="ln-color" ${hasColor ? 'data-active="true"' : ''}>
-        <button class="reset-color" onclick="resetColor(this)">Сбросить цвет</button>
+        <button class="reset-color" onclick="resetSingleColor(this)">Сбросить цвет</button>
         <span style="font-size:11px; color:${hasColor ? 'var(--accent)' : '#777'}">${hasColor ? 'ИНДИВИДУАЛЬНЫЙ' : 'ПО ТЕМЕ'}</span>
       </div>
       <div class="controls">
@@ -85,20 +89,38 @@ function renderInputs() {
         <button class="button" onclick="deleteLink(${i})">🗑</button>
       </div>`;
     
-    // Следим за изменением цвета
     const cp = div.querySelector('.ln-color');
-    cp.oninput = () => { cp.setAttribute('data-active', 'true'); cp.nextElementSibling.nextElementSibling.textContent = "ИНДИВИДУАЛЬНЫЙ"; cp.nextElementSibling.nextElementSibling.style.color = "var(--accent)"; };
+    cp.oninput = () => { 
+        cp.setAttribute('data-active', 'true'); 
+        const status = cp.nextElementSibling.nextElementSibling;
+        status.textContent = "ИНДИВИДУАЛЬНЫЙ"; 
+        status.style.color = "var(--accent)"; 
+    };
     
     container.appendChild(div);
   });
 }
 
-function resetColor(btn) {
+// Сброс одного цвета
+function resetSingleColor(btn) {
     const cp = btn.previousElementSibling;
     cp.removeAttribute('data-active');
     cp.value = "#ffffff";
-    btn.nextElementSibling.textContent = "ПО ТЕМЕ";
-    btn.nextElementSibling.style.color = "#777";
+    const status = btn.nextElementSibling;
+    status.textContent = "ПО ТЕМЕ";
+    status.style.color = "#777";
+}
+
+// МАССОВЫЙ СБРОС ЦВЕТОВ
+function resetAllColors() {
+    if(confirm("Вы уверены, что хотите сбросить цвета ВСЕХ кнопок? Они станут зависимы от общей темы.")) {
+        // Обновляем текущие данные из инпутов (чтобы не потерять текст), но удаляем цвета
+        updateLinksFromInputs();
+        links.forEach(link => {
+            delete link.color;
+        });
+        renderInputs();
+    }
 }
 
 function updateLinksFromInputs() {
@@ -154,7 +176,6 @@ async function loadFromCloud() {
   } catch (e) { alert("Ошибка загрузки."); }
 }
 
-// Работа с темой в редакторе
 const colorSelect = document.getElementById("colorSelect");
 const styleSelect = document.getElementById("styleSelect");
 
