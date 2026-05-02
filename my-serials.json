@@ -1,5 +1,10 @@
 [
   {
+    "name": "hugging",
+    "url": "https://huggingface.co/datasets?modality=modality:document,modality:text,modality:tabular,modality:image&sort=trending",
+    "color": "#ff7300"
+  },
+  {
     "name": "АЛИЕКСПРЕСС",
     "url": "https://www.aliexpress.com/w/wholesale-%D0%BF%D0%B0%D0%BB%D0%B0%D1%82%D0%BA%D0%B0-%D1%81-%D1%82%D0%B0%D0%BC%D0%B1%D1%83%D1%80%D0%BE%D0%BC-2-%D1%87%D0%B5%D0%BB%D0%BE%D0%BA%D0%B2%D0%B5%D0%BA%D0%B0.html?spm=a2g0o.productlist.search.0",
     "color": "#e1ff00"
