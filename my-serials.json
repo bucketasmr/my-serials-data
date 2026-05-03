@@ -1,5 +1,10 @@
 [
   {
+    "name": "Обучиться автоматизации N8N",
+    "url": "https://www.youtube.com/watch?v=N4_0SHSUv0o",
+    "color": "#00bfff"
+  },
+  {
     "name": "hugging",
     "url": "https://huggingface.co/datasets?modality=modality:document,modality:text,modality:tabular,modality:image&sort=trending",
     "color": "#ff7300"
