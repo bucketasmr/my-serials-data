@@ -1,5 +1,10 @@
 [
   {
+    "name": "АВТОБАЗАР США",
+    "url": "https://carsandbids.com/",
+    "color": "#00ff4c"
+  },
+  {
     "name": "Моды",
     "url": "https://www.curseforge.com/minecraft",
     "color": "#6dff2e"
