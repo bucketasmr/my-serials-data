@@ -1,5 +1,10 @@
 [
   {
+    "name": "Моды",
+    "url": "https://www.curseforge.com/minecraft",
+    "color": "#6dff2e"
+  },
+  {
     "name": "Обучиться автоматизации N8N",
     "url": "https://www.youtube.com/watch?v=N4_0SHSUv0o",
     "color": "#00bfff"
