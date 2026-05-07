@@ -50,6 +50,11 @@
     "color": "#ff0000"
   },
   {
+    "name": "Привет gemi",
+    "url": "https://gemini.google.com/",
+    "color": "#00fa79"
+  },
+  {
     "name": "ДЖАНГО",
     "url": "https://ag.gidonline.fun/film/dzhango-osvobozhdennyj/",
     "color": "#ff0000"
@@ -141,11 +146,6 @@
   {
     "name": "АПП ДЕМО ПК",
     "url": "file:///C:/Users/Bucket/Desktop/MY%20APP%20programming/App%20Demo.html"
-  },
-  {
-    "name": "Привет gemi",
-    "url": "https://gemini.google.com/",
-    "color": "#00fa79"
   },
   {
     "name": "АУДИО ОНЛАЙН РЕДАКТОР",
