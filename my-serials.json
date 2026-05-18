@@ -1,7 +1,8 @@
 [
   {
     "name": "Kick live",
-    "url": "https://kick.com/"
+    "url": "https://kick.com/",
+    "color": "#04ff00"
   },
   {
     "name": "Arena AI Video maker",
