@@ -1,5 +1,10 @@
 [
   {
+    "name": "Гроза КАРТА",
+    "url": "https://www.lightningmaps.org/?lang=uk#m=oss;t=4;s=200;o=0;b=0.00;ts=0;z=8;y=50.4998;x=28.4843;d=8;dl=4;dc=0;dn=0;tr=1;tc=0;",
+    "color": "#c8ff00"
+  },
+  {
     "name": "Очень Страшное кино 3",
     "url": "https://ag.gidonline.fun/film/ochen-strashnoe-kino-3/",
     "color": "#ff0000"
