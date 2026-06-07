@@ -1,5 +1,15 @@
 [
   {
+    "name": "СИМУЛЯНТ",
+    "url": "https://ag.gidonline.fun/film/simulyant/",
+    "color": "#ff0000"
+  },
+  {
+    "name": "ОФИС",
+    "url": "https://ag.gidonline.fun/624_Ofis/",
+    "color": "#ff0000"
+  },
+  {
     "name": "LIGHTNING ГРОЗА",
     "url": "https://www.lightningmaps.org/?lang=uk#m=oss;t=4;s=200;o=0;b=34.20;ts=0;z=6;y=49.7032;x=28.7952;d=8;dl=4;dc=0;dn=1;tr=0;",
     "color": "#fff700"
