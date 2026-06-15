@@ -1,5 +1,10 @@
 [
   {
+    "name": "DROP BOX",
+    "url": "https://www.dropbox.com/home",
+    "color": "#00ff33"
+  },
+  {
     "name": "Радио Приятная музыка",
     "url": "https://worldradios.app/en/station/12234/m4d-radio-the-30-s-40-s",
     "color": "#00ff7b"
