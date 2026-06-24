@@ -1,5 +1,10 @@
 [
   {
+    "name": "Pluto Tv",
+    "url": "https://pluto.tv/us/hub/home",
+    "color": "#586a00"
+  },
+  {
     "name": "СЧЕТЧИК КЛИКОВ И ЗРИТЕЛЕЙ",
     "url": "https://bucketasmr.github.io/lite/dashboard.html",
     "color": "#fb00ff"
