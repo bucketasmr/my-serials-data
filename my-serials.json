@@ -1,5 +1,10 @@
 [
   {
+    "name": "ОНЛАЙН КАРТА WINDY ГРОЗА",
+    "url": "https://www.windy.com/ru/-%D0%94%D0%BE%D0%B6%D0%B4%D1%8C-%D0%B3%D1%80%D0%BE%D0%B7%D0%B0-rain?rain,50.282,29.337,8",
+    "color": "#fbff00"
+  },
+  {
     "name": "KILLHOUSE",
     "url": "https://www.netflix.com/watch/82977392?trackId=284616272&tctx=0%2C0%2Cc8ffb2d8-f4f9-450d-ba4d-a1907b2ae158%2Cc8ffb2d8-f4f9-450d-ba4d-a1907b2ae158%7C%3DeyJwYWdlSWQiOiJmMzVmYjVmZi1lMzM0LTQ3MjgtYTI0Zi0zNzVkN2Y5ZjBhZmQvMS8va2lsbGhvdXNlLzAvMCIsImxvY2FsU2VjdGlvbklkIjoiMiJ9%2C%2C%2C%2C%2C%2CVideo%3A82977392%2CdetailsPagePlayButton",
     "color": "#ff0000"
