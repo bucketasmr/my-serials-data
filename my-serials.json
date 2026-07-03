@@ -1,5 +1,10 @@
 [
   {
+    "name": "WYNDY ПОГОДА",
+    "url": "https://www.windy.com/?49.482,30.318,6https://www.windy.com/?49.482,30.318,6",
+    "color": "#0091ff"
+  },
+  {
     "name": "3d TUNING",
     "url": "https://www.3dtuning.com/en-US/home",
     "color": "#05bf00"
