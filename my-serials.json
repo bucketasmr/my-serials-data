@@ -1,5 +1,10 @@
 [
   {
+    "name": "СЕРВЕР",
+    "url": "https://dashboard.ngrok.com/endpoints",
+    "color": "#8c01fe"
+  },
+  {
     "name": "Время Приключений (Мульт)",
     "url": "https://adventuretime.mult-fan.tv/season.php?id=5",
     "color": "#ff0000"
