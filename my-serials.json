@@ -289,7 +289,8 @@
   },
   {
     "name": "AI PAINTING",
-    "url": "https://app.leonardo.ai/"
+    "url": "https://app.leonardo.ai/realtime-canvas",
+    "color": "#00ff6e"
   },
   {
     "name": "FUNNY VIDEOS",
