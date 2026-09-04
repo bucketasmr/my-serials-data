@@ -1,5 +1,10 @@
 [
   {
+    "name": "TAMAGOCHI online",
+    "url": "https://tamawebgame.github.io/",
+    "color": "#00ff2a"
+  },
+  {
     "name": "Обучение ШАХМАТАМ",
     "url": "https://lichess.org/ru/learn",
     "color": "#ff0000"
