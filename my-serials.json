@@ -1,5 +1,10 @@
 [
   {
+    "name": "Обучение ШАХМАТАМ",
+    "url": "https://lichess.org/ru/learn",
+    "color": "#ff0000"
+  },
+  {
     "name": "Шахматы ОНЛАЙН",
     "url": "https://www.chess.com/play/coach?source=play_nav",
     "color": "#ff0000"
