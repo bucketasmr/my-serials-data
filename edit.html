@@ -5,13 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Редактировать сериалы</title>
 <style>
-:root { --accent: #ffb400; --bg: #121212; --card: #1e1e1e; }
+:root { 
+  --accent: #ffb400; 
+  --bg: #121212; 
+  --card: #1e1e1e; 
+  --cols: 4;
+}
 body { font-family: "Segoe UI", sans-serif; background: var(--bg); color: #fff; display: flex; flex-direction: column; align-items: center; gap: 15px; padding: 40px; }
 .themeBox { position: fixed; top: 15px; right: 15px; display: flex; gap: 5px; z-index: 100; }
 select { background: #1e1e1e; color: white; border: 1px solid var(--accent); padding: 5px; border-radius: 4px; }
 .token-box { background: var(--card); border: 1px dashed var(--accent); padding: 15px; border-radius: 10px; width: 100%; max-width: 400px; text-align: center; }
 .token-box label { font-size: 11px; color: var(--accent); display: block; margin-bottom: 5px; }
-#linksContainer { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; width: 100%; max-width: 1200px; }
+
+.searchBox { position: relative; width: 100%; max-width: 400px; }
+#search { padding: 10px 35px 10px 10px; width: 100%; border-radius: 8px; border: 1px solid var(--accent); background: #1e1e1e; color: white; outline: none; margin: 0; box-sizing: border-box; }
+#clearSearch { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #aaa; font-size: 14px; display: none; transition: 0.2s; }
+#clearSearch:hover { color: #ff4444; }
+
+#linksContainer { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 15px; width: 100%; max-width: 1200px; }
 input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--accent); border-radius: 6px; background-color: #1e1e1e; color: #fff; box-sizing: border-box; }
 
 .color-row { display: flex; gap: 5px; align-items: center; margin-bottom: 8px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; }
@@ -20,10 +31,9 @@ input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--
 
 .button { background-color: var(--card); border: 2px solid var(--accent); color: var(--accent); padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; text-align: center; }
 .button:hover { background: var(--accent); color: black; }
-.linkBlock { padding: 15px; border: 1px solid #444; border-radius: 10px; background: rgba(30,30,30,0.8); }
+.linkBlock { padding: 15px; border: 2px solid var(--block-accent, var(--accent)); border-radius: 10px; background: rgba(30,30,30,0.8); transition: border-color 0.2s; }
 .controls { display: flex; gap: 5px; margin-top: 5px; }
 
-/* Стиль для кнопки массового сброса */
 .danger-btn { border-color: #ef4444; color: #ef4444; }
 .danger-btn:hover { background: #ef4444; color: white; }
 </style>
@@ -40,6 +50,12 @@ input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--
     <option value="#ec4899">🌸</option>
   </select>
   <select id="styleSelect"><option value="">Default</option><option value="glass">Glass</option></select>
+  <select id="colsSelect">
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+  </select>
 </div>
 
 <a class="button" href="serials.html">← На главную</a>
@@ -48,6 +64,11 @@ input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--
 <div class="token-box">
     <label>GITHUB TOKEN</label>
     <input type="password" id="gh-token" placeholder="ghp_xxxx">
+</div>
+
+<div class="searchBox">
+  <input type="text" id="search" placeholder="🔍 Поиск по названию...">
+  <span id="clearSearch">✖</span>
 </div>
 
 <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content: center; margin-top: 10px;">
@@ -65,33 +86,54 @@ let links = [];
 const ghTokenInput = document.getElementById("gh-token");
 ghTokenInput.value = localStorage.getItem("gh_token") || "";
 
-function renderInputs() {
+const searchInput = document.getElementById('search');
+const clearBtn = document.getElementById('clearSearch');
+
+function renderInputs(filter = "") {
   const container = document.getElementById("linksContainer");
   container.innerHTML = "";
-  links.forEach((link, i) => {
+  
+  links.forEach((link, realIndex) => {
+    if (filter && !link.name.toLowerCase().includes(filter.toLowerCase())) return;
+
     const div = document.createElement("div");
     div.className = "linkBlock";
     
     const hasColor = link.color && link.color.startsWith('#');
     const colorVal = hasColor ? link.color : "#ffffff";
 
+    if (hasColor) {
+      div.style.setProperty('--block-accent', link.color);
+    } else {
+      div.style.removeProperty('--block-accent');
+    }
+
     div.innerHTML = `
-      <input value="${link.name}" placeholder="Название" class="ln-name">
-      <input value="${link.url}" placeholder="Ссылка" class="ln-url">
+      <input value="${link.name || ''}" placeholder="Название" class="ln-name" data-index="${realIndex}">
+      <input value="${link.url || ''}" placeholder="Ссылка" class="ln-url" data-index="${realIndex}">
       <div class="color-row">
-        <input type="color" value="${colorVal}" class="ln-color" ${hasColor ? 'data-active="true"' : ''}>
-        <button class="reset-color" onclick="resetSingleColor(this)">Сбросить цвет</button>
+        <input type="color" value="${colorVal}" class="ln-color" ${hasColor ? 'data-active="true"' : ''} data-index="${realIndex}">
+        <button class="reset-color" onclick="resetSingleColor(${realIndex})">Сбросить цвет</button>
         <span style="font-size:11px; color:${hasColor ? 'var(--accent)' : '#777'}">${hasColor ? 'ИНДИВИДУАЛЬНЫЙ' : 'ПО ТЕМЕ'}</span>
       </div>
       <div class="controls">
-        <button class="button" onclick="moveUp(${i})">⬆</button>
-        <button class="button" onclick="moveDown(${i})">⬇</button>
-        <button class="button" onclick="deleteLink(${i})">🗑</button>
+        <button class="button" onclick="moveUp(${realIndex})">⬆</button>
+        <button class="button" onclick="moveDown(${realIndex})">⬇</button>
+        <button class="button" onclick="deleteLink(${realIndex})">🗑</button>
       </div>`;
     
+    // Привязка событий ввода данных на лету
+    const nameInput = div.querySelector('.ln-name');
+    const urlInput = div.querySelector('.ln-url');
     const cp = div.querySelector('.ln-color');
+
+    nameInput.oninput = (e) => { links[realIndex].name = e.target.value; };
+    urlInput.oninput = (e) => { links[realIndex].url = e.target.value; };
+    
     cp.oninput = () => { 
         cp.setAttribute('data-active', 'true'); 
+        links[realIndex].color = cp.value;
+        div.style.setProperty('--block-accent', cp.value);
         const status = cp.nextElementSibling.nextElementSibling;
         status.textContent = "ИНДИВИДУАЛЬНЫЙ"; 
         status.style.color = "var(--accent)"; 
@@ -101,41 +143,19 @@ function renderInputs() {
   });
 }
 
-// Сброс одного цвета
-function resetSingleColor(btn) {
-    const cp = btn.previousElementSibling;
-    cp.removeAttribute('data-active');
-    cp.value = "#ffffff";
-    const status = btn.nextElementSibling;
-    status.textContent = "ПО ТЕМЕ";
-    status.style.color = "#777";
+function resetSingleColor(i) {
+    delete links[i].color;
+    renderInputs(searchInput.value);
 }
 
-// МАССОВЫЙ СБРОС ЦВЕТОВ
 function resetAllColors() {
     if(confirm("Вы уверены, что хотите сбросить цвета ВСЕХ кнопок? Они станут зависимы от общей темы.")) {
-        // Обновляем текущие данные из инпутов (чтобы не потерять текст), но удаляем цвета
-        updateLinksFromInputs();
-        links.forEach(link => {
-            delete link.color;
-        });
-        renderInputs();
+        links.forEach(link => { delete link.color; });
+        renderInputs(searchInput.value);
     }
 }
 
-function updateLinksFromInputs() {
-  links = [...document.querySelectorAll(".linkBlock")].map(block => {
-    const name = block.querySelector(".ln-name").value;
-    const url = block.querySelector(".ln-url").value;
-    const cp = block.querySelector(".ln-color");
-    const obj = { name, url };
-    if (cp.hasAttribute('data-active')) obj.color = cp.value;
-    return obj;
-  });
-}
-
 async function saveAll() {
-  updateLinksFromInputs();
   const token = ghTokenInput.value.trim();
   localStorage.setItem("myLinks", JSON.stringify(links));
   if(token) localStorage.setItem("gh_token", token);
@@ -158,42 +178,62 @@ async function saveAll() {
       if (saveRes.ok) alert("Успешно сохранено на GitHub! 🚀");
     } catch (e) { alert("Ошибка GitHub: " + e.message); }
     btn.textContent = "💾 Сохранить везде";
+  } else {
+    alert("Сохранено локально! (Для сохранения в облако укажите GITHUB TOKEN)");
   }
 }
 
-function addNewLink(){ updateLinksFromInputs(); links.unshift({name:"", url:""}); renderInputs(); }
-function deleteLink(i){ if(confirm("Удалить?")){ updateLinksFromInputs(); links.splice(i,1); renderInputs(); } }
-function moveUp(i){ if(i>0){ updateLinksFromInputs(); [links[i],links[i-1]]=[links[i-1],links[i]]; renderInputs(); } }
-function moveDown(i){ if(i<links.length-1){ updateLinksFromInputs(); [links[i],links[i+1]]=[links[i+1],links[i]]; renderInputs(); } }
+function addNewLink(){ links.unshift({name:"", url:""}); renderInputs(searchInput.value); }
+function deleteLink(i){ if(confirm("Удалить?")){ links.splice(i,1); renderInputs(searchInput.value); } }
+function moveUp(i){ if(i>0){ [links[i],links[i-1]]=[links[i-1],links[i]]; renderInputs(searchInput.value); } }
+function moveDown(i){ if(i<links.length-1){ [links[i],links[i+1]]=[links[i+1],links[i]]; renderInputs(searchInput.value); } }
 
 async function loadFromCloud() {
   try {
     const res = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${FILE_PATH}?t=${Date.now()}`);
     links = await res.json();
     localStorage.setItem("myLinks", JSON.stringify(links));
-    renderInputs();
+    renderInputs(searchInput.value);
     alert("Загружено из облака! ☁️");
   } catch (e) { alert("Ошибка загрузки."); }
 }
 
 const colorSelect = document.getElementById("colorSelect");
 const styleSelect = document.getElementById("styleSelect");
+const colsSelect = document.getElementById("colsSelect");
 
 function applyTheme() {
   document.documentElement.style.setProperty('--accent', colorSelect.value);
+  document.documentElement.style.setProperty('--cols', colsSelect.value);
   document.body.className = styleSelect.value;
   localStorage.setItem("themeColor", colorSelect.value);
   localStorage.setItem("themeStyle", styleSelect.value);
+  localStorage.setItem("themeCols", colsSelect.value);
 }
 
 colorSelect.value = localStorage.getItem("themeColor") || "#ffb400";
 styleSelect.value = localStorage.getItem("themeStyle") || "";
+colsSelect.value = localStorage.getItem("themeCols") || "4";
+
 colorSelect.onchange = applyTheme;
 styleSelect.onchange = applyTheme;
+colsSelect.onchange = applyTheme;
 applyTheme();
 
 links = JSON.parse(localStorage.getItem("myLinks")) || [];
 renderInputs();
+
+// Поиск
+searchInput.addEventListener("input", () => {
+  renderInputs(searchInput.value);
+  clearBtn.style.display = searchInput.value ? "block" : "none";
+});
+
+clearBtn.addEventListener("click", () => {
+  searchInput.value = "";
+  clearBtn.style.display = "none";
+  renderInputs("");
+});
 </script>
 </body>
 </html>
