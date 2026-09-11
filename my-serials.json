@@ -1,5 +1,10 @@
 [
   {
+    "name": "гугл",
+    "url": "https://www.google.com/?hl=uk",
+    "color": "#ff3300"
+  },
+  {
     "name": "Сумерки 3 23:27 минуточек",
     "url": "https://sumerki.org/3-film.html",
     "color": "#ff0000"
