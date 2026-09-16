@@ -1,5 +1,10 @@
 [
   {
+    "name": "Cooking app",
+    "url": "https://vercel.com/cooking9/cooking",
+    "color": "#2b00ff"
+  },
+  {
     "name": "ЧАСЫ",
     "url": "https://onlinealarmkur.com/clock/ru/#analog-clock",
     "color": "#c524ff"
