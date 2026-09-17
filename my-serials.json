@@ -1,5 +1,10 @@
 [
   {
+    "name": "Что приготовить?",
+    "url": "https://cooking-mu-one.vercel.app/",
+    "color": "#00fbff"
+  },
+  {
     "name": "VERCEL Cooking app",
     "url": "https://vercel.com/cooking9/cooking",
     "color": "#2b00ff"
