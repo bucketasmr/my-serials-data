@@ -361,7 +361,7 @@
   },
   {
     "name": "СТИМ СТАТ STEAM",
-    "url": "https://steamdb.info/",
+    "url": "https://steamdb.info/search/?a=all&q=",
     "color": "#002aff"
   },
   {
