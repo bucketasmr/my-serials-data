@@ -50,11 +50,11 @@ select {
 .searchBox {
   position: relative;
   width: 100%;
-  max-width: 500px;
+  max-width: 550px;
 }
 
 #search {
-  padding: calc(10px * var(--font-scale)) calc(35px * var(--font-scale)) calc(10px * var(--font-scale)) calc(10px * var(--font-scale));
+  padding: calc(10px * var(--font-scale)) calc(115px * var(--font-scale)) calc(10px * var(--font-scale)) calc(10px * var(--font-scale));
   width: 100%;
   border-radius: 8px;
   border: 1px solid var(--accent);
@@ -65,16 +65,38 @@ select {
   box-sizing: border-box;
 }
 
-#clearSearch {
+.search-btns {
   position: absolute;
-  right: 10px;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.search-action-btn {
+  background: #333;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: calc(12px * var(--font-scale));
+  transition: 0.2s;
+}
+.search-action-btn:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+#clearSearch {
   cursor: pointer;
   color: #aaa;
   font-size: calc(14px * var(--font-scale));
   display: none;
   transition: 0.2s;
+  padding: 0 4px;
 }
 
 #clearSearch:hover {
@@ -91,7 +113,6 @@ select {
 
 h1 { color: var(--accent); font-size: calc(2rem * var(--font-scale)); margin: 0; }
 
-/* Увеличиваем высоту и пропорции кнопок */
 .button {
   box-sizing: border-box;
   background: var(--card);
@@ -107,11 +128,10 @@ h1 { color: var(--accent); font-size: calc(2rem * var(--font-scale)); margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(85px * var(--font-scale)); /* Делает кнопки выше */
+  min-height: calc(85px * var(--font-scale));
   font-size: calc(1.1rem * var(--font-scale));
 }
 
-/* ЭФФЕКТ НАВЕДЕНИЯ */
 .button:hover {
   background: var(--accent) !important;
   color: #000000 !important;
@@ -128,7 +148,6 @@ h1 { color: var(--accent); font-size: calc(2rem * var(--font-scale)); margin: 0;
   min-height: auto !important;
 }
 
-/* Блок кнопок изменения масштаба */
 .zoomControls {
   position: fixed;
   bottom: 15px;
@@ -151,6 +170,54 @@ h1 { color: var(--accent); font-size: calc(2rem * var(--font-scale)); margin: 0;
 .zoom-btn:hover {
   background: var(--accent);
   color: #000;
+}
+
+/* Экранная клавиатура на всю ширину экрана */
+#virtualKeyboard {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(18, 18, 18, 0.98);
+  border-top: 3px solid var(--accent);
+  padding: 15px 20px;
+  z-index: 2000;
+  box-sizing: border-box;
+  box-shadow: 0 -5px 25px rgba(0,0,0,0.7);
+}
+.vk-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.vk-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+.vk-key {
+  background: var(--card);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 12px;
+  flex: 1;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  user-select: none;
+}
+.vk-key:hover {
+  background: var(--accent);
+  color: #000;
+}
+.vk-wide {
+  flex: 2;
 }
 
 /* Стили тем */
@@ -199,10 +266,33 @@ h1 { color: var(--accent); font-size: calc(2rem * var(--font-scale)); margin: 0;
 
 <div class="searchBox">
   <input type="text" id="search" placeholder="🔍 Поиск по названию...">
-  <span id="clearSearch">✖</span>
+  <div class="search-btns">
+    <span id="clearSearch">✖</span>
+    <button class="search-action-btn" onclick="toggleKeyboard()" title="Экранная клавиатура">⌨</button>
+    <button class="search-action-btn" onclick="startVoiceSearch()" title="Голосовой ввод">🎤</button>
+  </div>
 </div>
 
 <div id="linksContainer"></div>
+
+<!-- Экранная клавиатура на всю ширину с переключением языка -->
+<div id="virtualKeyboard">
+  <div class="vk-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: var(--accent); font-weight: bold;">
+      <span id="vkTitle">Экранная клавиатура (РУС)</span>
+      <span onclick="toggleKeyboard()" style="cursor: pointer; padding: 2px 8px; background: rgba(255,255,255,0.1); border-radius: 4px;">✖ Закрыть</span>
+    </div>
+    <div class="vk-row" id="vkRow1"></div>
+    <div class="vk-row" id="vkRow2"></div>
+    <div class="vk-row" id="vkRow3"></div>
+    <div class="vk-row">
+      <div class="vk-key" onclick="toggleLanguage()" id="langBtn" style="background: var(--accent); color: #000;">РУС / ENG</div>
+      <div class="vk-key vk-wide" onclick="vkPress(' ')">Пробел</div>
+      <div class="vk-key vk-wide" onclick="vkBackspace()">⌫ Стереть</div>
+      <div class="vk-key vk-wide" onclick="vkClear()">Очистить</div>
+    </div>
+  </div>
+</div>
 
 <!-- Кнопки изменения размера интерфейса -->
 <div class="zoomControls">
@@ -220,6 +310,43 @@ let links = [];
 const container = document.getElementById('linksContainer');
 const searchInput = document.getElementById('search');
 const clearBtn = document.getElementById('clearSearch');
+const vkBoard = document.getElementById('virtualKeyboard');
+
+let currentLang = 'ru'; // текущий язык клавиатуры
+
+const layouts = {
+  ru: {
+    title: 'Экранная клавиатура (РУС)',
+    row1: ['й','ц','у','к','е','н','г','ш','щ','з','х','ъ'],
+    row2: ['ф','ы','в','а','п','р','о','л','д','ж','э'],
+    row3: ['я','ч','с','м','и','т','ь','б','ю']
+  },
+  en: {
+    title: 'Virtual Keyboard (ENG)',
+    row1: ['q','w','e','r','t','y','u','i','o','p'],
+    row2: ['a','s','d','f','g','h','j','k','l'],
+    row3: ['z','x','c','v','b','n','m']
+  }
+};
+
+function renderKeyboard() {
+  document.getElementById('vkTitle').textContent = layouts[currentLang].title;
+  
+  const r1 = document.getElementById('vkRow1');
+  const r2 = document.getElementById('vkRow2');
+  const r3 = document.getElementById('vkRow3');
+  
+  r1.innerHTML = layouts[currentLang].row1.map(char => `<div class="vk-key" onclick="vkPress('${char}')">${char}</div>`).join('');
+  r2.innerHTML = layouts[currentLang].row2.map(char => `<div class="vk-key" onclick="vkPress('${char}')">${char}</div>`).join('');
+  r3.innerHTML = layouts[currentLang].row3.map(char => `<div class="vk-key" onclick="vkPress('${char}')">${char}</div>`).join('');
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === 'ru' ? 'en' : 'ru';
+  renderKeyboard();
+}
+
+renderKeyboard();
 
 let fontScale = parseFloat(localStorage.getItem('fontScale')) || 1;
 
@@ -236,6 +363,49 @@ function changeZoom(delta) {
 }
 
 applyZoom();
+
+function toggleKeyboard() {
+  vkBoard.style.display = vkBoard.style.display === 'block' ? 'none' : 'block';
+}
+
+function vkPress(char) {
+  searchInput.value += char;
+  triggerSearch();
+}
+
+function vkBackspace() {
+  searchInput.value = searchInput.value.slice(0, -1);
+  triggerSearch();
+}
+
+function vkClear() {
+  searchInput.value = "";
+  triggerSearch();
+}
+
+function triggerSearch() {
+  renderLinks(searchInput.value);
+  clearBtn.style.display = searchInput.value ? "block" : "none";
+}
+
+function startVoiceSearch() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("Голосовой ввод не поддерживается вашим браузером.");
+    return;
+  }
+  const recognition = new SpeechRecognition();
+  recognition.lang = currentLang === 'ru' ? 'ru-RU' : 'en-US';
+  recognition.onresult = (event) => {
+    const text = event.results[0][0].transcript;
+    searchInput.value = text;
+    triggerSearch();
+  };
+  recognition.onerror = () => {
+    alert("Не удалось распознать голос. Попробуйте еще раз.");
+  };
+  recognition.start();
+}
 
 async function chooseDataSource() {
   const localData = localStorage.getItem('myLinks');
@@ -324,8 +494,7 @@ styleSelect.onchange = applyTheme;
 colsSelect.onchange = applyTheme;
 
 searchInput.addEventListener("input", () => {
-  renderLinks(searchInput.value);
-  clearBtn.style.display = searchInput.value ? "block" : "none";
+  triggerSearch();
 });
 
 clearBtn.addEventListener("click", () => {
