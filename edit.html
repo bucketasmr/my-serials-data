@@ -10,32 +10,71 @@
   --bg: #121212; 
   --card: #1e1e1e; 
   --cols: 4;
+  --font-scale: 1;
 }
-body { font-family: "Segoe UI", sans-serif; background: var(--bg); color: #fff; display: flex; flex-direction: column; align-items: center; gap: 15px; padding: 40px; }
+body { 
+  font-family: "Segoe UI", sans-serif; 
+  background: var(--bg); 
+  color: #fff; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  gap: calc(15px * var(--font-scale)); 
+  padding: calc(40px * var(--font-scale)) calc(20px * var(--font-scale)); 
+  font-size: calc(1rem * var(--font-scale));
+  box-sizing: border-box;
+  margin: 0;
+  min-height: 100vh;
+}
 .themeBox { position: fixed; top: 15px; right: 15px; display: flex; gap: 5px; z-index: 100; }
-select { background: #1e1e1e; color: white; border: 1px solid var(--accent); padding: 5px; border-radius: 4px; }
-.token-box { background: var(--card); border: 1px dashed var(--accent); padding: 15px; border-radius: 10px; width: 100%; max-width: 400px; text-align: center; }
-.token-box label { font-size: 11px; color: var(--accent); display: block; margin-bottom: 5px; }
+select { background: #1e1e1e; color: white; border: 1px solid var(--accent); padding: calc(5px * var(--font-scale)); border-radius: 4px; font-size: calc(1rem * var(--font-scale)); }
+.token-box { background: var(--card); border: 1px dashed var(--accent); padding: calc(15px * var(--font-scale)); border-radius: 10px; width: 100%; max-width: 400px; text-align: center; }
+.token-box label { font-size: calc(11px * var(--font-scale)); color: var(--accent); display: block; margin-bottom: 5px; }
 
-.searchBox { position: relative; width: 100%; max-width: 400px; }
-#search { padding: 10px 35px 10px 10px; width: 100%; border-radius: 8px; border: 1px solid var(--accent); background: #1e1e1e; color: white; outline: none; margin: 0; box-sizing: border-box; }
-#clearSearch { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #aaa; font-size: 14px; display: none; transition: 0.2s; }
+.searchBox { position: relative; width: 100%; max-width: 500px; }
+#search { padding: calc(10px * var(--font-scale)) calc(35px * var(--font-scale)) calc(10px * var(--font-scale)) calc(10px * var(--font-scale)); width: 100%; border-radius: 8px; border: 1px solid var(--accent); background: #1e1e1e; color: white; outline: none; margin: 0; box-sizing: border-box; font-size: calc(1rem * var(--font-scale)); }
+#clearSearch { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #aaa; font-size: calc(14px * var(--font-scale)); display: none; transition: 0.2s; }
 #clearSearch:hover { color: #ff4444; }
 
-#linksContainer { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 15px; width: 100%; max-width: 1200px; }
-input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--accent); border-radius: 6px; background-color: #1e1e1e; color: #fff; box-sizing: border-box; }
+/* Растягиваем контейнер редактора карточек на всю ширину экрана */
+#linksContainer { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: calc(15px * var(--font-scale)); width: 100%; box-sizing: border-box; }
+input { width: 100%; padding: calc(10px * var(--font-scale)); margin-bottom: 8px; border: 2px solid var(--accent); border-radius: 6px; background-color: #1e1e1e; color: #fff; box-sizing: border-box; font-size: calc(1rem * var(--font-scale)); }
 
-.color-row { display: flex; gap: 5px; align-items: center; margin-bottom: 8px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; }
-.ln-color { width: 50px !important; height: 35px; padding: 0 !important; cursor: pointer; border: none !important; background: none !important; }
-.reset-color { font-size: 10px; padding: 5px; cursor: pointer; background: #333; border: 1px solid #555; color: #ccc; border-radius: 4px; }
+.color-row { display: flex; gap: 5px; align-items: center; margin-bottom: 8px; background: rgba(0,0,0,0.2); padding: calc(5px * var(--font-scale)); border-radius: 5px; }
+.ln-color { width: calc(50px * var(--font-scale)) !important; height: calc(35px * var(--font-scale)); padding: 0 !important; cursor: pointer; border: none !important; background: none !important; }
+.reset-color { font-size: calc(10px * var(--font-scale)); padding: calc(5px * var(--font-scale)); cursor: pointer; background: #333; border: 1px solid #555; color: #ccc; border-radius: 4px; }
 
-.button { background-color: var(--card); border: 2px solid var(--accent); color: var(--accent); padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; text-align: center; }
+.button { background-color: var(--card); border: 2px solid var(--accent); color: var(--accent); padding: calc(10px * var(--font-scale)); border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; text-align: center; font-size: calc(1rem * var(--font-scale)); }
 .button:hover { background: var(--accent); color: black; }
-.linkBlock { padding: 15px; border: 2px solid var(--block-accent, var(--accent)); border-radius: 10px; background: rgba(30,30,30,0.8); transition: border-color 0.2s; }
+.linkBlock { padding: calc(15px * var(--font-scale)); border: 2px solid var(--block-accent, var(--accent)); border-radius: 10px; background: rgba(30,30,30,0.8); transition: border-color 0.2s; }
 .controls { display: flex; gap: 5px; margin-top: 5px; }
 
 .danger-btn { border-color: #ef4444; color: #ef4444; }
 .danger-btn:hover { background: #ef4444; color: white; }
+
+/* Кнопки зума */
+.zoomControls {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  display: flex;
+  gap: 5px;
+  z-index: 1000;
+}
+.zoom-btn {
+  background: var(--card);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+.zoom-btn:hover {
+  background: var(--accent);
+  color: #000;
+}
 </style>
 </head>
 
@@ -58,7 +97,7 @@ input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--
   </select>
 </div>
 
-<a class="button" href="serials.html">← На главную</a>
+<a class="button" href="Serial.html">← На главную</a>
 <h1>Редактор</h1>
 
 <div class="token-box">
@@ -71,7 +110,7 @@ input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--
   <span id="clearSearch">✖</span>
 </div>
 
-<div style="display:flex; gap:8px; flex-wrap:wrap; justify-content: center; margin-top: 10px;">
+<div style="display:flex; gap:8px; flex-wrap:wrap; justify-content: center; margin-top: 5px;">
   <button class="button saveBtn" onclick="saveAll()">💾 Сохранить везде</button>
   <button class="button" onclick="addNewLink()">➕ Добавить</button>
   <button class="button danger-btn" onclick="resetAllColors()">🔴 Сбросить ВСЕ цвета</button>
@@ -79,6 +118,12 @@ input { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid var(--
 </div>
 
 <div id="linksContainer"></div>
+
+<!-- Кнопки изменения размера интерфейса -->
+<div class="zoomControls">
+  <button class="zoom-btn" onclick="changeZoom(-0.1)" title="Уменьшить интерфейс">А-</button>
+  <button class="zoom-btn" onclick="changeZoom(0.1)" title="Увеличить интерфейс">А+</button>
+</div>
 
 <script>
 const OWNER = "bucketasmr", REPO = "my-serials-data", FILE_PATH = "my-serials.json";
@@ -88,6 +133,22 @@ ghTokenInput.value = localStorage.getItem("gh_token") || "";
 
 const searchInput = document.getElementById('search');
 const clearBtn = document.getElementById('clearSearch');
+
+let fontScale = parseFloat(localStorage.getItem('fontScale')) || 1;
+
+function applyZoom() {
+  if (fontScale < 0.7) fontScale = 0.7;
+  if (fontScale > 1.8) fontScale = 1.8;
+  document.documentElement.style.setProperty('--font-scale', fontScale);
+  localStorage.setItem('fontScale', fontScale);
+}
+
+function changeZoom(delta) {
+  fontScale += delta;
+  applyZoom();
+}
+
+applyZoom();
 
 function renderInputs(filter = "") {
   const container = document.getElementById("linksContainer");
@@ -114,7 +175,7 @@ function renderInputs(filter = "") {
       <div class="color-row">
         <input type="color" value="${colorVal}" class="ln-color" ${hasColor ? 'data-active="true"' : ''} data-index="${realIndex}">
         <button class="reset-color" onclick="resetSingleColor(${realIndex})">Сбросить цвет</button>
-        <span style="font-size:11px; color:${hasColor ? 'var(--accent)' : '#777'}">${hasColor ? 'ИНДИВИДУАЛЬНЫЙ' : 'ПО ТЕМЕ'}</span>
+        <span style="font-size:calc(11px * var(--font-scale)); color:${hasColor ? 'var(--accent)' : '#777'}">${hasColor ? 'ИНДИВИДУАЛЬНЫЙ' : 'ПО ТЕМЕ'}</span>
       </div>
       <div class="controls">
         <button class="button" onclick="moveUp(${realIndex})">⬆</button>
@@ -122,7 +183,6 @@ function renderInputs(filter = "") {
         <button class="button" onclick="deleteLink(${realIndex})">🗑</button>
       </div>`;
     
-    // Привязка событий ввода данных на лету
     const nameInput = div.querySelector('.ln-name');
     const urlInput = div.querySelector('.ln-url');
     const cp = div.querySelector('.ln-color');
@@ -223,7 +283,6 @@ applyTheme();
 links = JSON.parse(localStorage.getItem("myLinks")) || [];
 renderInputs();
 
-// Поиск
 searchInput.addEventListener("input", () => {
   renderInputs(searchInput.value);
   clearBtn.style.display = searchInput.value ? "block" : "none";
