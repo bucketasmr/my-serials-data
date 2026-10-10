@@ -11,6 +11,7 @@
   --bg: #121212;
   --card: #1e1e1e;
   --cols: 4;
+  --font-scale: 1;
 }
 
 body {
@@ -20,8 +21,12 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
-  padding: 40px;
+  gap: calc(15px * var(--font-scale));
+  padding: calc(40px * var(--font-scale)) calc(20px * var(--font-scale));
+  font-size: calc(1rem * var(--font-scale));
+  box-sizing: border-box;
+  margin: 0;
+  min-height: 100vh;
 }
 
 .themeBox {
@@ -37,23 +42,27 @@ select {
   background: #1e1e1e;
   color: white;
   border: 1px solid var(--accent);
-  padding: 5px;
+  padding: calc(5px * var(--font-scale));
   border-radius: 4px;
+  font-size: calc(1rem * var(--font-scale));
 }
 
 .searchBox {
   position: relative;
-  width: 300px;
+  width: 100%;
+  max-width: 500px;
 }
 
 #search {
-  padding: 10px 35px 10px 10px;
+  padding: calc(10px * var(--font-scale)) calc(35px * var(--font-scale)) calc(10px * var(--font-scale)) calc(10px * var(--font-scale));
   width: 100%;
   border-radius: 8px;
   border: 1px solid var(--accent);
   background: #1e1e1e;
   color: white;
   outline: none;
+  font-size: calc(1rem * var(--font-scale));
+  box-sizing: border-box;
 }
 
 #clearSearch {
@@ -63,7 +72,7 @@ select {
   transform: translateY(-50%);
   cursor: pointer;
   color: #aaa;
-  font-size: 14px;
+  font-size: calc(14px * var(--font-scale));
   display: none;
   transition: 0.2s;
 }
@@ -75,20 +84,20 @@ select {
 #linksContainer {
   display: grid;
   grid-template-columns: repeat(var(--cols), 1fr);
-  gap: 10px;
+  gap: calc(12px * var(--font-scale));
   width: 100%;
-  max-width: 1200px;
+  box-sizing: border-box;
 }
 
-h1 { color: var(--accent); }
+h1 { color: var(--accent); font-size: calc(2rem * var(--font-scale)); margin: 0; }
 
-/* БАЗОВЫЙ СТИЛЬ КНОПКИ */
+/* Увеличиваем высоту и пропорции кнопок */
 .button {
   box-sizing: border-box;
   background: var(--card);
   border: 2px solid var(--accent);
   color: var(--accent);
-  padding: 15px;
+  padding: calc(22px * var(--font-scale)) calc(15px * var(--font-scale));
   border-radius: 8px;
   transition: 0.2s;
   text-align: center;
@@ -98,13 +107,14 @@ h1 { color: var(--accent); }
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 50px;
+  min-height: calc(85px * var(--font-scale)); /* Делает кнопки выше */
+  font-size: calc(1.1rem * var(--font-scale));
 }
 
-/* ЭФФЕКТ НАВЕДЕНИЯ (Использует локальную переменную --accent) */
+/* ЭФФЕКТ НАВЕДЕНИЯ */
 .button:hover {
   background: var(--accent) !important;
-  color: #000000 !important; /* Шрифт ВСЕГДА становится черным */
+  color: #000000 !important;
   transform: scale(1.03);
 }
 
@@ -114,13 +124,39 @@ h1 { color: var(--accent); }
   left: 15px;
   z-index: 1000;
   width: auto;
-  padding: 10px 15px;
+  padding: calc(10px * var(--font-scale)) calc(15px * var(--font-scale));
+  min-height: auto !important;
+}
+
+/* Блок кнопок изменения масштаба */
+.zoomControls {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  display: flex;
+  gap: 5px;
+  z-index: 1000;
+}
+
+.zoom-btn {
+  background: var(--card);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+.zoom-btn:hover {
+  background: var(--accent);
+  color: #000;
 }
 
 /* Стили тем */
 .glass .button { backdrop-filter: blur(10px); background: rgba(30,30,30,0.6); }
-.neon .button { box-shadow: 0 0 10px var(--accent); }
-.soft .button { border-radius: 20px; }
+.neon .button { box-shadow: 0 0 calc(10px * var(--font-scale)) var(--accent); }
+.soft .button { border-radius: calc(20px * var(--font-scale)); }
 .minimal .button { border: none; border-bottom: 2px solid var(--accent); border-radius: 0; }
 .bold .button { font-weight: bold; }
 
@@ -157,7 +193,7 @@ h1 { color: var(--accent); }
 </div>
 
 <a class="button editBtn" href="edit.html">Редактировать</a>
-<button class="button" onclick="loadFromCloud()" style="width: auto; padding: 10px 20px; margin-bottom: 10px;">🔄 Обновить из облака</button>
+<button class="button" onclick="loadFromCloud()" style="width: auto; padding: 10px 20px; margin-bottom: 5px; min-height: auto;">🔄 Обновить из облака</button>
 
 <h1>Мои сериалы 🎬</h1>
 
@@ -167,6 +203,12 @@ h1 { color: var(--accent); }
 </div>
 
 <div id="linksContainer"></div>
+
+<!-- Кнопки изменения размера интерфейса -->
+<div class="zoomControls">
+  <button class="zoom-btn" onclick="changeZoom(-0.1)" title="Уменьшить интерфейс">А-</button>
+  <button class="zoom-btn" onclick="changeZoom(0.1)" title="Увеличить интерфейс">А+</button>
+</div>
 
 <script>
 const CLOUD_URL_BASE = "https://raw.githubusercontent.com/bukcetasmr/my-serials-data/refs/heads/main/my-serials.json";
@@ -178,6 +220,22 @@ let links = [];
 const container = document.getElementById('linksContainer');
 const searchInput = document.getElementById('search');
 const clearBtn = document.getElementById('clearSearch');
+
+let fontScale = parseFloat(localStorage.getItem('fontScale')) || 1;
+
+function applyZoom() {
+  if (fontScale < 0.7) fontScale = 0.7;
+  if (fontScale > 1.8) fontScale = 1.8;
+  document.documentElement.style.setProperty('--font-scale', fontScale);
+  localStorage.setItem('fontScale', fontScale);
+}
+
+function changeZoom(delta) {
+  fontScale += delta;
+  applyZoom();
+}
+
+applyZoom();
 
 async function chooseDataSource() {
   const localData = localStorage.getItem('myLinks');
@@ -201,9 +259,7 @@ async function loadFromCloud() {
     links = await res.json();
     localStorage.setItem('myLinks', JSON.stringify(links));
     renderLinks();
-    console.log("Обновлено из облака ☁️");
   } catch (e) {
-    console.error("Ошибка загрузки из облака, загружаю локально", e);
     loadFromLocal();
   }
 }
@@ -227,14 +283,11 @@ function renderLinks(filter="") {
     a.textContent = link.name;
     a.className = "button";
 
-    // ЛОГИКА ЦВЕТА КНОПКИ (Исправлено для полной поддержки тем и наведения)
     if (link.color && link.color.startsWith('#')) {
-      // Задаем переменную --accent ЛОКАЛЬНО для этой кнопки
       a.style.setProperty('--accent', link.color);
       a.style.borderColor = link.color;
       a.style.color = link.color;
     } else {
-      // Если индивидуального цвета нет — сбрасываем, чтобы работала глобальная тема
       a.style.removeProperty('--accent');
       a.style.borderColor = "";
       a.style.color = "";
@@ -244,7 +297,6 @@ function renderLinks(filter="") {
   });
 }
 
-// Управление темой (глобальное)
 const colorSelect = document.getElementById("colorSelect");
 const styleSelect = document.getElementById("styleSelect");
 const colsSelect = document.getElementById("colsSelect");
@@ -257,7 +309,6 @@ function applyTheme() {
   localStorage.setItem("themeStyle", styleSelect.value);
   localStorage.setItem("themeCols", colsSelect.value);
   
-  // Перерисовываем ссылки, чтобы обновить стили кнопок без цвета
   renderLinks(searchInput.value);
 }
 
@@ -272,7 +323,6 @@ colorSelect.onchange = applyTheme;
 styleSelect.onchange = applyTheme;
 colsSelect.onchange = applyTheme;
 
-// Поиск
 searchInput.addEventListener("input", () => {
   renderLinks(searchInput.value);
   clearBtn.style.display = searchInput.value ? "block" : "none";
