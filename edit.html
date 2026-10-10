@@ -31,12 +31,55 @@ select { background: #1e1e1e; color: white; border: 1px solid var(--accent); pad
 .token-box { background: var(--card); border: 1px dashed var(--accent); padding: calc(15px * var(--font-scale)); border-radius: 10px; width: 100%; max-width: 400px; text-align: center; }
 .token-box label { font-size: calc(11px * var(--font-scale)); color: var(--accent); display: block; margin-bottom: 5px; }
 
-.searchBox { position: relative; width: 100%; max-width: 500px; }
-#search { padding: calc(10px * var(--font-scale)) calc(35px * var(--font-scale)) calc(10px * var(--font-scale)) calc(10px * var(--font-scale)); width: 100%; border-radius: 8px; border: 1px solid var(--accent); background: #1e1e1e; color: white; outline: none; margin: 0; box-sizing: border-box; font-size: calc(1rem * var(--font-scale)); }
-#clearSearch { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #aaa; font-size: calc(14px * var(--font-scale)); display: none; transition: 0.2s; }
+.searchBox { position: relative; width: 100%; max-width: 550px; }
+#search { 
+  padding: calc(10px * var(--font-scale)) calc(115px * var(--font-scale)) calc(10px * var(--font-scale)) calc(10px * var(--font-scale)); 
+  width: 100%; 
+  border-radius: 8px; 
+  border: 1px solid var(--accent); 
+  background: #1e1e1e; 
+  color: white; 
+  outline: none; 
+  margin: 0; 
+  box-sizing: border-box; 
+  font-size: calc(1rem * var(--font-scale)); 
+}
+
+.search-btns {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.search-action-btn {
+  background: #333;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: calc(12px * var(--font-scale));
+  transition: 0.2s;
+}
+.search-action-btn:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+#clearSearch { 
+  cursor: pointer; 
+  color: #aaa; 
+  font-size: calc(14px * var(--font-scale)); 
+  display: none; 
+  transition: 0.2s; 
+  padding: 0 4px;
+}
 #clearSearch:hover { color: #ff4444; }
 
-/* Растягиваем контейнер редактора карточек на всю ширину экрана */
 #linksContainer { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: calc(15px * var(--font-scale)); width: 100%; box-sizing: border-box; }
 input { width: 100%; padding: calc(10px * var(--font-scale)); margin-bottom: 8px; border: 2px solid var(--accent); border-radius: 6px; background-color: #1e1e1e; color: #fff; box-sizing: border-box; font-size: calc(1rem * var(--font-scale)); }
 
@@ -44,9 +87,9 @@ input { width: 100%; padding: calc(10px * var(--font-scale)); margin-bottom: 8px
 .ln-color { width: calc(50px * var(--font-scale)) !important; height: calc(35px * var(--font-scale)); padding: 0 !important; cursor: pointer; border: none !important; background: none !important; }
 .reset-color { font-size: calc(10px * var(--font-scale)); padding: calc(5px * var(--font-scale)); cursor: pointer; background: #333; border: 1px solid #555; color: #ccc; border-radius: 4px; }
 
-.button { background-color: var(--card); border: 2px solid var(--accent); color: var(--accent); padding: calc(10px * var(--font-scale)); border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; text-align: center; font-size: calc(1rem * var(--font-scale)); }
+.button { background-color: var(--card); border: 2px solid var(--accent); color: var(--accent); padding: calc(12px * var(--font-scale)); border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; text-align: center; font-size: calc(1rem * var(--font-scale)); }
 .button:hover { background: var(--accent); color: black; }
-.linkBlock { padding: calc(15px * var(--font-scale)); border: 2px solid var(--block-accent, var(--accent)); border-radius: 10px; background: rgba(30,30,30,0.8); transition: border-color 0.2s; }
+.linkBlock { padding: calc(18px * var(--font-scale)); border: 2px solid var(--block-accent, var(--accent)); border-radius: 10px; background: rgba(30,30,30,0.8); transition: border-color 0.2s; }
 .controls { display: flex; gap: 5px; margin-top: 5px; }
 
 .danger-btn { border-color: #ef4444; color: #ef4444; }
@@ -75,6 +118,54 @@ input { width: 100%; padding: calc(10px * var(--font-scale)); margin-bottom: 8px
   background: var(--accent);
   color: #000;
 }
+
+/* Экранная клавиатура на всю ширину экрана */
+#virtualKeyboard {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(18, 18, 18, 0.98);
+  border-top: 3px solid var(--accent);
+  padding: 15px 20px;
+  z-index: 2000;
+  box-sizing: border-box;
+  box-shadow: 0 -5px 25px rgba(0,0,0,0.7);
+}
+.vk-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.vk-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+.vk-key {
+  background: var(--card);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 12px;
+  flex: 1;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  user-select: none;
+}
+.vk-key:hover {
+  background: var(--accent);
+  color: #000;
+}
+.vk-wide {
+  flex: 2;
+}
 </style>
 </head>
 
@@ -97,7 +188,7 @@ input { width: 100%; padding: calc(10px * var(--font-scale)); margin-bottom: 8px
   </select>
 </div>
 
-<a class="button" href="serials.html">← На главную</a>
+<a class="button" href="serials.html" style="min-height: auto;">← На главную</a>
 <h1>Редактор</h1>
 
 <div class="token-box">
@@ -107,17 +198,40 @@ input { width: 100%; padding: calc(10px * var(--font-scale)); margin-bottom: 8px
 
 <div class="searchBox">
   <input type="text" id="search" placeholder="🔍 Поиск по названию...">
-  <span id="clearSearch">✖</span>
+  <div class="search-btns">
+    <span id="clearSearch">✖</span>
+    <button class="search-action-btn" onclick="toggleKeyboard()" title="Экранная клавиатура">⌨</button>
+    <button class="search-action-btn" onclick="startVoiceSearch()" title="Голосовой ввод">🎤</button>
+  </div>
 </div>
 
 <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content: center; margin-top: 5px;">
-  <button class="button saveBtn" onclick="saveAll()">💾 Сохранить везде</button>
-  <button class="button" onclick="addNewLink()">➕ Добавить</button>
-  <button class="button danger-btn" onclick="resetAllColors()">🔴 Сбросить ВСЕ цвета</button>
-  <button class="button" onclick="loadFromCloud()">🔄 Обновить из облака</button>
+  <button class="button saveBtn" onclick="saveAll()" style="min-height: auto;">💾 Сохранить везде</button>
+  <button class="button" onclick="addNewLink()" style="min-height: auto;">➕ Добавить</button>
+  <button class="button danger-btn" onclick="resetAllColors()" style="min-height: auto;">🔴 Сбросить ВСЕ цвета</button>
+  <button class="button" onclick="loadFromCloud()" style="min-height: auto;">🔄 Обновить из облака</button>
 </div>
 
 <div id="linksContainer"></div>
+
+<!-- Экранная клавиатура на всю ширину с переключением языка -->
+<div id="virtualKeyboard">
+  <div class="vk-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; color: var(--accent); font-weight: bold;">
+      <span id="vkTitle">Экранная клавиатура (РУС)</span>
+      <span onclick="toggleKeyboard()" style="cursor: pointer; padding: 2px 8px; background: rgba(255,255,255,0.1); border-radius: 4px;">✖ Закрыть</span>
+    </div>
+    <div class="vk-row" id="vkRow1"></div>
+    <div class="vk-row" id="vkRow2"></div>
+    <div class="vk-row" id="vkRow3"></div>
+    <div class="vk-row">
+      <div class="vk-key" onclick="toggleLanguage()" id="langBtn" style="background: var(--accent); color: #000;">РУС / ENG</div>
+      <div class="vk-key vk-wide" onclick="vkPress(' ')">Пробел</div>
+      <div class="vk-key vk-wide" onclick="vkBackspace()">⌫ Стереть</div>
+      <div class="vk-key vk-wide" onclick="vkClear()">Очистить</div>
+    </div>
+  </div>
+</div>
 
 <!-- Кнопки изменения размера интерфейса -->
 <div class="zoomControls">
@@ -133,6 +247,43 @@ ghTokenInput.value = localStorage.getItem("gh_token") || "";
 
 const searchInput = document.getElementById('search');
 const clearBtn = document.getElementById('clearSearch');
+const vkBoard = document.getElementById('virtualKeyboard');
+
+let currentLang = 'ru';
+
+const layouts = {
+  ru: {
+    title: 'Экранная клавиатура (РУС)',
+    row1: ['й','ц','у','к','е','н','г','ш','щ','з','х','ъ'],
+    row2: ['ф','ы','в','а','п','р','о','л','д','ж','э'],
+    row3: ['я','ч','с','м','и','т','ь','б','ю']
+  },
+  en: {
+    title: 'Virtual Keyboard (ENG)',
+    row1: ['q','w','e','r','t','y','u','i','o','p'],
+    row2: ['a','s','d','f','g','h','j','k','l'],
+    row3: ['z','x','c','v','b','n','m']
+  }
+};
+
+function renderKeyboard() {
+  document.getElementById('vkTitle').textContent = layouts[currentLang].title;
+  
+  const r1 = document.getElementById('vkRow1');
+  const r2 = document.getElementById('vkRow2');
+  const r3 = document.getElementById('vkRow3');
+  
+  r1.innerHTML = layouts[currentLang].row1.map(char => `<div class="vk-key" onclick="vkPress('${char}')">${char}</div>`).join('');
+  r2.innerHTML = layouts[currentLang].row2.map(char => `<div class="vk-key" onclick="vkPress('${char}')">${char}</div>`).join('');
+  r3.innerHTML = layouts[currentLang].row3.map(char => `<div class="vk-key" onclick="vkPress('${char}')">${char}</div>`).join('');
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === 'ru' ? 'en' : 'ru';
+  renderKeyboard();
+}
+
+renderKeyboard();
 
 let fontScale = parseFloat(localStorage.getItem('fontScale')) || 1;
 
@@ -149,6 +300,49 @@ function changeZoom(delta) {
 }
 
 applyZoom();
+
+function toggleKeyboard() {
+  vkBoard.style.display = vkBoard.style.display === 'block' ? 'none' : 'block';
+}
+
+function vkPress(char) {
+  searchInput.value += char;
+  triggerSearch();
+}
+
+function vkBackspace() {
+  searchInput.value = searchInput.value.slice(0, -1);
+  triggerSearch();
+}
+
+function vkClear() {
+  searchInput.value = "";
+  triggerSearch();
+}
+
+function triggerSearch() {
+  renderInputs(searchInput.value);
+  clearBtn.style.display = searchInput.value ? "block" : "none";
+}
+
+function startVoiceSearch() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("Голосовой ввод не поддерживается вашим браузером.");
+    return;
+  }
+  const recognition = new SpeechRecognition();
+  recognition.lang = currentLang === 'ru' ? 'ru-RU' : 'en-US';
+  recognition.onresult = (event) => {
+    const text = event.results[0][0].transcript;
+    searchInput.value = text;
+    triggerSearch();
+  };
+  recognition.onerror = () => {
+    alert("Не удалось распознать голос. Попробуйте еще раз.");
+  };
+  recognition.start();
+}
 
 function renderInputs(filter = "") {
   const container = document.getElementById("linksContainer");
@@ -178,9 +372,9 @@ function renderInputs(filter = "") {
         <span style="font-size:calc(11px * var(--font-scale)); color:${hasColor ? 'var(--accent)' : '#777'}">${hasColor ? 'ИНДИВИДУАЛЬНЫЙ' : 'ПО ТЕМЕ'}</span>
       </div>
       <div class="controls">
-        <button class="button" onclick="moveUp(${realIndex})">⬆</button>
-        <button class="button" onclick="moveDown(${realIndex})">⬇</button>
-        <button class="button" onclick="deleteLink(${realIndex})">🗑</button>
+        <button class="button" onclick="moveUp(${realIndex})" style="min-height: auto;">⬆</button>
+        <button class="button" onclick="moveDown(${realIndex})" style="min-height: auto;">⬇</button>
+        <button class="button" onclick="deleteLink(${realIndex})" style="min-height: auto;">🗑</button>
       </div>`;
     
     const nameInput = div.querySelector('.ln-name');
@@ -284,8 +478,7 @@ links = JSON.parse(localStorage.getItem("myLinks")) || [];
 renderInputs();
 
 searchInput.addEventListener("input", () => {
-  renderInputs(searchInput.value);
-  clearBtn.style.display = searchInput.value ? "block" : "none";
+  triggerSearch();
 });
 
 clearBtn.addEventListener("click", () => {
