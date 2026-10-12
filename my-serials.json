@@ -1,5 +1,10 @@
 [
   {
+    "name": "Погода новая",
+    "url": "https://www.msn.com/ru-xl/weather/forecast/in-Kyiv,Ukraine?loc=eyJsIjoiS3lpdiIsInIiOiJLeWl2IiwiYyI6IlVrcmFpbmUiLCJpIjoiVUEiLCJnIjoicnUteGwiLCJ4IjoiMzAuNTI0IiwieSI6IjUwLjQzNyJ9&weadegreetype=C",
+    "color": "#ff0000"
+  },
+  {
     "name": "Голый Пистолет 2 1/2: Запах страха 34 минута Фильм",
     "url": "https://kinogo.online/filmy/13359-golyj-pistolet-2-1-2-zapah-straha.html",
     "color": "#ff0000"
