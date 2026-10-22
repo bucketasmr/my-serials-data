@@ -1,5 +1,10 @@
 [
   {
+    "name": "Облачная база данных",
+    "url": "https://supabase.com/",
+    "color": "#0ae6d7"
+  },
+  {
     "name": "NFS UN2",
     "url": "https://nfsu2.xyz/",
     "color": "#00ffd5"
