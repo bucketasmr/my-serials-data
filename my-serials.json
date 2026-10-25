@@ -20,6 +20,11 @@
     "color": "#0ae6d7"
   },
   {
+    "name": "ОСНОВНАЯ версия АПП АСМР APP ASMR",
+    "url": "https://bucketasmr.github.io/lite/",
+    "color": "#00ff1e"
+  },
+  {
     "name": "NFS UN2",
     "url": "https://nfsu2.xyz/",
     "color": "#00ffd5"
@@ -397,10 +402,6 @@
   {
     "name": "DASHBOARD GOOGLE",
     "url": "https://console.firebase.google.com/project/bucket-asmr-premium/overview"
-  },
-  {
-    "name": "ОСНОВНАЯ версия АПП АСМР APP ASMR",
-    "url": "https://bucketasmr.github.io/lite/"
   },
   {
     "name": "АУДИО ОНЛАЙН РЕДАКТОР",
