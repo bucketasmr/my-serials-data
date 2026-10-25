@@ -84,12 +84,69 @@ select { background: #1e1e1e; color: white; border: 1px solid var(--accent); pad
 input { width: 100%; padding: calc(10px * var(--font-scale)); margin-bottom: 8px; border: 2px solid var(--accent); border-radius: 6px; background-color: #1e1e1e; color: #fff; box-sizing: border-box; font-size: calc(1rem * var(--font-scale)); }
 
 .color-row { display: flex; gap: 5px; align-items: center; margin-bottom: 8px; background: rgba(0,0,0,0.2); padding: calc(5px * var(--font-scale)); border-radius: 5px; }
-.ln-color { width: calc(50px * var(--font-scale)) !important; height: calc(35px * var(--font-scale)); padding: 0 !important; cursor: pointer; border: none !important; background: none !important; }
+.ln-color { width: calc(50px * var(--font-scale)) !important; height: calc(35px * var(--font-scale)); padding: 0 !important; cursor: pointer; border: none !important; background: none !important; margin-bottom: 0 !important; }
 .reset-color { font-size: calc(10px * var(--font-scale)); padding: calc(5px * var(--font-scale)); cursor: pointer; background: #333; border: 1px solid #555; color: #ccc; border-radius: 4px; }
 
 .button { background-color: var(--card); border: 2px solid var(--accent); color: var(--accent); padding: calc(12px * var(--font-scale)); border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; text-align: center; font-size: calc(1rem * var(--font-scale)); }
 .button:hover { background: var(--accent); color: black; }
-.linkBlock { padding: calc(18px * var(--font-scale)); border: 2px solid var(--block-accent, var(--accent)); border-radius: 10px; background: rgba(30,30,30,0.8); transition: border-color 0.2s; }
+
+.linkBlock { 
+  padding: calc(18px * var(--font-scale)); 
+  border: 2px solid var(--block-accent, var(--accent)); 
+  border-radius: 10px; 
+  background: rgba(30,30,30,0.8); 
+  transition: border-color 0.2s, transform 0.2s, opacity 0.2s; 
+  position: relative;
+}
+.linkBlock.dragging {
+  opacity: 0.4;
+  transform: scale(0.98);
+}
+.linkBlock.drag-over {
+  border-style: dashed;
+  box-shadow: 0 0 10px var(--accent);
+}
+
+.block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.drag-handle {
+  cursor: grab;
+  user-select: none;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--block-accent, var(--accent));
+  color: var(--block-accent, var(--accent));
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: calc(16px * var(--font-scale));
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.pos-control {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: calc(12px * var(--font-scale));
+  color: var(--accent);
+  font-weight: bold;
+}
+.pos-input {
+  width: 55px !important;
+  margin-bottom: 0 !important;
+  padding: 4px 6px !important;
+  text-align: center;
+}
+
 .controls { display: flex; gap: 5px; margin-top: 5px; }
 
 .danger-btn { border-color: #ef4444; color: #ef4444; }
@@ -252,6 +309,7 @@ const clearBtn = document.getElementById('clearSearch');
 const vkBoard = document.getElementById('virtualKeyboard');
 
 let currentLang = 'ru';
+let draggedIndex = null;
 
 const layouts = {
   ru: {
@@ -346,6 +404,16 @@ function startVoiceSearch() {
   recognition.start();
 }
 
+function moveItemToPosition(fromIndex, toIndex) {
+  if (isNaN(toIndex) || toIndex < 0 || toIndex >= links.length || fromIndex === toIndex) {
+    renderInputs(searchInput.value);
+    return;
+  }
+  const [movedItem] = links.splice(fromIndex, 1);
+  links.splice(toIndex, 0, movedItem);
+  renderInputs(searchInput.value);
+}
+
 function renderInputs(filter = "") {
   const container = document.getElementById("linksContainer");
   container.innerHTML = "";
@@ -355,6 +423,7 @@ function renderInputs(filter = "") {
 
     const div = document.createElement("div");
     div.className = "linkBlock";
+    div.dataset.index = realIndex;
     
     const hasColor = link.color && link.color.startsWith('#');
     const colorVal = hasColor ? link.color : "#ffffff";
@@ -366,6 +435,13 @@ function renderInputs(filter = "") {
     }
 
     div.innerHTML = `
+      <div class="block-header">
+        <div class="drag-handle" title="Зажмите и перетащите в нужное место">⣿ Перетащить</div>
+        <div class="pos-control">
+          <span>№</span>
+          <input type="number" min="1" max="${links.length}" value="${realIndex + 1}" class="pos-input" data-index="${realIndex}" title="Измените номер, чтобы переместить на эту позицию">
+        </div>
+      </div>
       <input value="${link.name || ''}" placeholder="Название" class="ln-name" data-index="${realIndex}">
       <input value="${link.url || ''}" placeholder="Ссылка" class="ln-url" data-index="${realIndex}">
       <div class="color-row">
@@ -376,16 +452,23 @@ function renderInputs(filter = "") {
       <div class="controls">
         <button class="button" onclick="moveUp(${realIndex})" style="min-height: auto;">⬆</button>
         <button class="button" onclick="moveDown(${realIndex})" style="min-height: auto;">⬇</button>
-        <button class="button" onclick="deleteLink(${realIndex})" style="min-height: auto;">🗑</button>
+        <button class="button danger-btn" onclick="deleteLink(${realIndex})" style="min-height: auto;">🗑</button>
       </div>`;
     
     const nameInput = div.querySelector('.ln-name');
     const urlInput = div.querySelector('.ln-url');
+    const posInput = div.querySelector('.pos-input');
     const cp = div.querySelector('.ln-color');
+    const dragHandle = div.querySelector('.drag-handle');
 
     nameInput.oninput = (e) => { links[realIndex].name = e.target.value; };
     urlInput.oninput = (e) => { links[realIndex].url = e.target.value; };
     
+    posInput.onchange = (e) => {
+      const newPos = parseInt(e.target.value, 10) - 1;
+      moveItemToPosition(realIndex, newPos);
+    };
+
     cp.oninput = () => { 
         cp.setAttribute('data-active', 'true'); 
         links[realIndex].color = cp.value;
@@ -394,7 +477,80 @@ function renderInputs(filter = "") {
         status.textContent = "ИНДИВИДУАЛЬНЫЙ"; 
         status.style.color = "var(--accent)"; 
     };
-    
+
+    /* Drag and Drop события (Мышь / HTML5) */
+    dragHandle.addEventListener('mousedown', () => {
+      div.setAttribute('draggable', 'true');
+    });
+
+    div.addEventListener('dragstart', (e) => {
+      draggedIndex = realIndex;
+      div.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', realIndex);
+    });
+
+    div.addEventListener('dragend', () => {
+      div.classList.remove('dragging');
+      div.removeAttribute('draggable');
+      document.querySelectorAll('.linkBlock').forEach(b => b.classList.remove('drag-over'));
+    });
+
+    div.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      div.classList.add('drag-over');
+    });
+
+    div.addEventListener('dragleave', () => {
+      div.classList.remove('drag-over');
+    });
+
+    div.addEventListener('drop', (e) => {
+      e.preventDefault();
+      div.classList.remove('drag-over');
+      if (draggedIndex !== null && draggedIndex !== realIndex) {
+        moveItemToPosition(draggedIndex, realIndex);
+        draggedIndex = null;
+      }
+    });
+
+    /* Поддержка Touch Drag (Сенсорный экран) */
+    dragHandle.addEventListener('touchstart', (e) => {
+      draggedIndex = realIndex;
+      div.classList.add('dragging');
+    }, { passive: true });
+
+    dragHandle.addEventListener('touchmove', (e) => {
+      const touch = e.touches[0];
+      const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (targetElement) {
+        const targetBlock = targetElement.closest('.linkBlock');
+        document.querySelectorAll('.linkBlock').forEach(b => b.classList.remove('drag-over'));
+        if (targetBlock) {
+          targetBlock.classList.add('drag-over');
+        }
+      }
+    }, { passive: true });
+
+    dragHandle.addEventListener('touchend', (e) => {
+      const touch = e.changedTouches[0];
+      const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+      div.classList.remove('dragging');
+      document.querySelectorAll('.linkBlock').forEach(b => b.classList.remove('drag-over'));
+
+      if (targetElement) {
+        const targetBlock = targetElement.closest('.linkBlock');
+        if (targetBlock && targetBlock.dataset.index !== undefined) {
+          const targetIndex = parseInt(targetBlock.dataset.index, 10);
+          if (draggedIndex !== null && draggedIndex !== targetIndex) {
+            moveItemToPosition(draggedIndex, targetIndex);
+          }
+        }
+      }
+      draggedIndex = null;
+    });
+
     container.appendChild(div);
   });
 }
