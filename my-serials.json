@@ -5,6 +5,11 @@
     "color": "#1814ff"
   },
   {
+    "name": "СТИМ СТАТ STEAM",
+    "url": "https://steamdb.info/",
+    "color": "#002aff"
+  },
+  {
     "name": "Groundwork game 22 last look",
     "url": "https://itorrents-igruha.org/25741-groundwork-simulator.html",
     "color": "#00cc0a"
@@ -427,11 +432,6 @@
   {
     "name": "КАК СДЕЛАТЬ САЙТ ИНСТРКУЦИЯ",
     "url": "https://docs.github.com/ru/pages/getting-started-with-github-pages/creating-a-github-pages-site#creating-a-repository-for-your-site"
-  },
-  {
-    "name": "СТИМ СТАТ STEAM",
-    "url": "https://steamdb.info/",
-    "color": "#002aff"
   },
   {
     "name": "Гриффины",
