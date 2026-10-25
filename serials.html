@@ -148,12 +148,14 @@ h1 { color: var(--accent); font-size: calc(2rem * var(--font-scale)); margin: 0;
   min-height: auto !important;
 }
 
+/* Кнопки изменения размера и индикатор */
 .zoomControls {
   position: fixed;
   bottom: 15px;
   right: 15px;
   display: flex;
-  gap: 5px;
+  align-items: center;
+  gap: 6px;
   z-index: 1000;
 }
 
@@ -170,6 +172,24 @@ h1 { color: var(--accent); font-size: calc(2rem * var(--font-scale)); margin: 0;
 .zoom-btn:hover {
   background: var(--accent);
   color: #000;
+}
+
+/* Индикатор размера */
+.zoom-indicator {
+  background: var(--card);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.zoom-indicator.visible {
+  opacity: 1;
 }
 
 /* Экранная клавиатура (увеличенные клавиши и капслок) */
@@ -296,8 +316,9 @@ h1 { color: var(--accent); font-size: calc(2rem * var(--font-scale)); margin: 0;
   </div>
 </div>
 
-<!-- Кнопки изменения размера интерфейса -->
+<!-- Кнопки изменения размера интерфейса и индикатор -->
 <div class="zoomControls">
+  <div id="zoomIndicator" class="zoom-indicator">100%</div>
   <button class="zoom-btn" onclick="changeZoom(-0.1)" title="Уменьшить интерфейс">А-</button>
   <button class="zoom-btn" onclick="changeZoom(0.1)" title="Увеличить интерфейс">А+</button>
 </div>
@@ -313,6 +334,8 @@ const container = document.getElementById('linksContainer');
 const searchInput = document.getElementById('search');
 const clearBtn = document.getElementById('clearSearch');
 const vkBoard = document.getElementById('virtualKeyboard');
+const zoomIndicator = document.getElementById('zoomIndicator');
+let zoomTimeout = null;
 
 let currentLang = 'ru';
 
@@ -350,13 +373,25 @@ function toggleLanguage() {
 
 renderKeyboard();
 
-let fontScale = parseFloat(localStorage.getItem('fontScale')) || 1;
+let fontScale = parseFloat(localStorage.getItem('fontScale')) || 1.4;
+
+function updateZoomIndicator() {
+  const percent = Math.round(fontScale * 100) + '%';
+  zoomIndicator.textContent = percent;
+  zoomIndicator.classList.add('visible');
+
+  if (zoomTimeout) clearTimeout(zoomTimeout);
+  zoomTimeout = setTimeout(() => {
+    zoomIndicator.classList.remove('visible');
+  }, 3000);
+}
 
 function applyZoom() {
   if (fontScale < 0.7) fontScale = 0.7;
   if (fontScale > 1.8) fontScale = 1.8;
   document.documentElement.style.setProperty('--font-scale', fontScale);
   localStorage.setItem('fontScale', fontScale);
+  updateZoomIndicator();
 }
 
 function changeZoom(delta) {
@@ -365,6 +400,7 @@ function changeZoom(delta) {
 }
 
 applyZoom();
+zoomIndicator.classList.remove('visible');
 
 function toggleKeyboard() {
   vkBoard.style.display = vkBoard.style.display === 'block' ? 'none' : 'block';
@@ -484,9 +520,9 @@ function applyTheme() {
   renderLinks(searchInput.value);
 }
 
-colorSelect.value = localStorage.getItem("themeColor") || "#ffb400";
-styleSelect.value = localStorage.getItem("themeStyle") || "";
-colsSelect.value = localStorage.getItem("themeCols") || "4";
+colorSelect.value = localStorage.getItem("themeColor") || "#a855f7";
+styleSelect.value = localStorage.getItem("themeStyle") || "soft";
+colsSelect.value = localStorage.getItem("themeCols") || "3";
 
 chooseDataSource();
 applyTheme();
