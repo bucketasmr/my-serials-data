@@ -1,5 +1,10 @@
 [
   {
+    "name": "AI VIDEO MODELS",
+    "url": "https://huggingface.co/stabilityai/stable-video-diffusion-img2vid/tree/main/image_encoder",
+    "color": "#fff700"
+  },
+  {
     "name": "AI Models Модели ИИ",
     "url": "https://civitai.com/models/4384/dreamshaper",
     "color": "#c1870b"
