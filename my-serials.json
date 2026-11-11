@@ -15,6 +15,11 @@
     "color": "#fff700"
   },
   {
+    "name": "СЧЕТЧИК КЛИКОВ И ЗРИТЕЛЕЙ",
+    "url": "https://bucketasmr.github.io/lite/dashboard.html",
+    "color": "#fb00ff"
+  },
+  {
     "name": "AI Models Модели ИИ",
     "url": "https://civitai.com/models/4384/dreamshaper",
     "color": "#c1870b"
@@ -281,11 +286,6 @@
     "name": "АВАТАР ЛЕГЕНДА ОБ ААНГЕ Фильм",
     "url": "https://www.netflix.com/watch/80238401?trackId=254015180&tctx=0%2C0%2C50aa557f-5fb0-4517-b3c3-a0f34e9217ae-58032932%2CNES_DA3DBCF547338EAE818D93B1B94DA0-8811005FEDC4E3-73B4E56B6C_p_1782495106133%2CNES_DA3DBCF547338EAE818D93B1B94DA0_p_1782495106133%2C%2C%2C%2C%2CVideo%3A80237957%2CbillboardPlayButton",
     "color": "#00ff59"
-  },
-  {
-    "name": "СЧЕТЧИК КЛИКОВ И ЗРИТЕЛЕЙ",
-    "url": "https://bucketasmr.github.io/lite/dashboard.html",
-    "color": "#fb00ff"
   },
   {
     "name": "DROP BOX",
