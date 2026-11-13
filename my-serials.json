@@ -1,11 +1,11 @@
 [
   {
     "name": "Poland RADIO",
-    "url": "https://myradioonline.pl/radio-wawa",
+    "url": "https://myradioonline.pl/radio-zlote-przeboje",
     "color": "#ff0000"
   },
   {
-    "name": "US TV OLD ",
+    "name": "OLD US TV",
     "url": "https://spelunkr.tv/library-card",
     "color": "#2efcff"
   },
@@ -13,11 +13,6 @@
     "name": "AI VIDEO MODELS",
     "url": "https://huggingface.co/stabilityai/stable-video-diffusion-img2vid/tree/main/image_encoder",
     "color": "#fff700"
-  },
-  {
-    "name": "СЧЕТЧИК КЛИКОВ И ЗРИТЕЛЕЙ",
-    "url": "https://bucketasmr.github.io/lite/dashboard.html",
-    "color": "#fb00ff"
   },
   {
     "name": "AI Models Модели ИИ",
@@ -288,6 +283,11 @@
     "color": "#00ff59"
   },
   {
+    "name": "СЧЕТЧИК КЛИКОВ И ЗРИТЕЛЕЙ",
+    "url": "https://bucketasmr.github.io/lite/dashboard.html",
+    "color": "#fb00ff"
+  },
+  {
     "name": "DROP BOX",
     "url": "https://www.dropbox.com/home",
     "color": "#00ff33"
@@ -537,5 +537,10 @@
   {
     "name": "Всякое",
     "url": "https://www.xnxx-ru.com/"
+  },
+  {
+    "name": "Фото эро",
+    "url": "https://hdmodel.top/filter.php?srt=pop",
+    "color": "#b51a00"
   }
 ]
